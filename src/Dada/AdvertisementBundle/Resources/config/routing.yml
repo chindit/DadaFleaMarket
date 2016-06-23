@@ -1,0 +1,3 @@
+dada_advertisement_homepage:
+    path:     /
+    defaults: { _controller: DadaAdvertisementBundle:Default:index }
