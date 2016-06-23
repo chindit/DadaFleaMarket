@@ -1,0 +1,15 @@
+dada_core:
+    resource: "@DadaCoreBundle/Resources/config/routing.yml"
+    prefix:   /
+
+dada_user:
+    resource: "@DadaUserBundle/Resources/config/routing.xml"
+    prefix:   "/account"
+
+dada_advertisement:
+    resource: "@DadaAdvertisementBundle/Resources/config/routing.yml"
+    prefix:   "/advertisement"
+
+#FOSUserBunle routing
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

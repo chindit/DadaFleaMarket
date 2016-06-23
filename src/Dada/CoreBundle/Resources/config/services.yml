@@ -1,0 +1,4 @@
+services:
+#    dada_core.example:
+#        class: Dada\CoreBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

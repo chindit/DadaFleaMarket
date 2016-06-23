@@ -1,0 +1,7 @@
+<p>Vous allez être redirigé vers l'accueil dans 5 secondes.  Si rien ne se produit, <a href="{{ url('dada_core_homepage') }}">cliquez ici</a></p>
+<script type="text/javascript">
+    function redirectToHome(){
+        window.location = '{{ url('dada_core_homepage') }}';
+    }
+    window.setTimeout(redirectToHome, 5000);
+</script>

@@ -1,0 +1,16 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+    {% trans_default_domain 'FOSUserBundle' %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+            <h1>Réinitialisation du mot de passe</h1>
+            {{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'fos_user_resetting_reset fos_user_form' } }) }}
+            {{ form_widget(form) }}
+            <div>
+                <input type="submit" value="{{ 'resetting.reset.submit'|trans }}" class="btn btn-primary" />
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

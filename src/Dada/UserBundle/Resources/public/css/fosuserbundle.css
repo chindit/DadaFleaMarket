@@ -1,0 +1,31 @@
+form:not('.special'){
+    display: block;
+    margin: auto;
+    width: 214px;
+    border: 1px solid gray;
+    padding: 7px;
+    border-radius: 15px;
+}
+.fos_user_form input:not([type="checkbox"]){
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+form input:not([type="submit"]){
+    color: black;
+}
+
+label:not([for=remember_me]), input:not([type=checkbox]), button{
+    display: block;
+}
+label, input, button{
+    margin: 7px;
+}
+form ul{
+    padding: 0px;
+}
+form ul li{
+    list-style: none;
+    background: rgba(235, 0, 0, 0.5);
+    padding: 4px;
+}

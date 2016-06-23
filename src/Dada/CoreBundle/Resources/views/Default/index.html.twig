@@ -1,0 +1,35 @@
+{% extends "::base.html.twig" %}
+{% block body %}
+    {# Main content#}
+        <div class="jumbotron">
+            <h1>Toutes nos offres en un clin d'œil</h1>
+            <p class="lead" id="jumbotron-lead-test">Besoin d'un nouveau grille-pain?  D'un tueur à gages pour vous débarrasser enfin de votre encombrante belle-mère?  Vous trouverez tout cela sur <i>Dada's Flea Market</i></p>
+            <p>Mieux que <i>SilkRoad</i> et <i>Amazon</i> réunis, n'hésitez plus!</p>
+            <p><a class="btn btn-lg btn-success" href="{{ path('fos_user_registration_register') }}" role="button">M'inscrire maintenant!</a></p>
+        </div>
+
+        <div class="row marketing">
+            <h2>Nos dernières annonces</h2>
+            <div class="col-lg-6">
+                <h4>Subheading</h4>
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+            </div>
+
+            <div class="col-lg-6">
+                <h4>Subheading</h4>
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+            </div>
+        </div>
+{% endblock %}
