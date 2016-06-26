@@ -1,3 +1,9 @@
-dada_advertisement_homepage:
-    path:     /
-    defaults: { _controller: DadaAdvertisementBundle:Default:index }
+dada_advertisement_add:
+    path:     /add
+    defaults: { _controller: DadaAdvertisementBundle:Advert:add }
+
+dada_ajax_city_from_coords:
+    path: /ajax/city/{latitude}/{longitude}
+    defaults: { _controller: DadaAdvertisementBundle:Ajax:getCityFromCoords, _format: json }
+    methods: [GET]
+

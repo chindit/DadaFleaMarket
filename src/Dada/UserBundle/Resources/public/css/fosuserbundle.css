@@ -10,6 +10,10 @@ form:not('.special'){
     width: 100%;
     margin-bottom: 15px;
 }
+.fos_user_form textarea{
+    width: 100%;
+    min-height: 125px;
+}
 
 form input:not([type="submit"]){
     color: black;
