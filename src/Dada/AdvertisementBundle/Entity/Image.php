@@ -3,6 +3,7 @@
 namespace Dada\AdvertisementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Image
@@ -53,6 +54,8 @@ class Image
      * @ORM\ManyToOne(targetEntity="Advertisement", inversedBy="images")
      */
     private $advert;
+
+    private $file; //Contains file during transfer
 
 
     /**
@@ -183,5 +186,25 @@ class Image
     public function getAdvert()
     {
         return $this->advert;
+    }
+
+    /**
+     * Get file
+     *
+     * @return mixed
+     */
+    public function getFile(){
+        return $this->file;
+    }
+
+    /**
+     * Set File
+     *
+     * @param UploadedFile|null $file
+     * @return $this
+     */
+    public function setFile(UploadedFile $file=null){
+        $this->file = $file;
+        return $this;
     }
 }

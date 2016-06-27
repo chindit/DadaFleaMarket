@@ -5,6 +5,10 @@
         <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
             <h1>Ajouter une nouvelle annonce</h1>
             {{ form_start(form, {'attr': {'class': 'fos_user_form'}}) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.images) }}
+            <a href="#" id="insert_image" class="btn btn-primary">Ajouter une autre image</a>
             {{ form_widget(form) }}
             {{ form_end(form) }}
             <p class="hidden" id="googlemaps-url">{{ ajaxUrl }}</p>
