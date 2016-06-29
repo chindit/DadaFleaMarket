@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * @ORM\Table(name="image")
  * @ORM\Entity(repositoryClass="Dada\AdvertisementBundle\Repository\ImageRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Image
 {
@@ -203,8 +204,36 @@ class Image
      * @param UploadedFile|null $file
      * @return $this
      */
-    public function setFile(UploadedFile $file=null){
+    public function setFile(UploadedFile $file){
         $this->file = $file;
+
         return $this;
     }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function preUpload(){
+        if(is_null($this->file))
+            return;
+
+        $this->name = uniqid().'.'.$this->file->guessExtension();
+        $filePath = $this->file->getRealPath();
+        $imageSize = getimagesize($filePath);
+        $this->width = $imageSize[0];
+        $this->height = $imageSize[1];
+        $this->weight = filesize($filePath);
+    }
+
+    /**
+     * @ORM\PostPersist()
+     */
+    public function upload(){
+        if(is_null($this->file))
+            return;
+
+        $this->file->move('../web/uploads/adverts/', $this->name);
+    }
+
+
 }

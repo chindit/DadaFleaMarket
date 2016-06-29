@@ -1,8 +1,13 @@
-.image-box{
+/* Unused -> replaced by .jumbotron */
+/*.image-box{
     border: 1px solid gray;
     background-color: lightgray;
     width: 90%;
     padding: 10px;
     margin: 5px auto;
     border-radius: 15px;
+}*/
+/* Margin for submit button */
+#advertisement_submit{
+    margin-top: 7px;
 }

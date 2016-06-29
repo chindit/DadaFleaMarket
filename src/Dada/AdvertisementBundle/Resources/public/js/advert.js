@@ -43,7 +43,7 @@ function addImageField(){
         emplacement.append('<div class="alert alert-warning">Seulement 3 images sont autorisées</div>');
         return;
     }
-    var template = emplacement.attr('data-prototype').replace(/__name__label__/g, 'Image n°'+(index+1)).replace(/__name__/g, index).replace('<div>', '<div class="image-box">');
+    var template = emplacement.attr('data-prototype').replace(/__name__label__/g, 'Image n°'+(index+1)).replace(/__name__/g, index).replace('<div>', '<div class="jumbotron">');
 
     var prototype = $(template);
     addDeleteLink(prototype);

@@ -3,6 +3,7 @@
 namespace Dada\AdvertisementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Advertisement
@@ -25,6 +26,8 @@ class Advertisement
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\Length(min=10)
+     * @Assert\Length(max=255)
      */
     private $title;
 
@@ -32,6 +35,7 @@ class Advertisement
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\Length(min=10)
      */
     private $description;
 
@@ -45,7 +49,7 @@ class Advertisement
     /**
      * @var string
      *
-     * @ORM\Column(name="location", type="string", length=255)
+     * @ORM\Column(name="location", type="string", length=255, nullable=true)
      */
     private $location;
 
@@ -69,7 +73,7 @@ class Advertisement
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="Image", mappedBy="advert")
+     * @ORM\OneToMany(targetEntity="Image", mappedBy="advert", cascade={"persist", "remove"})
      */
     private $images;
 
