@@ -7,3 +7,8 @@ dada_ajax_city_from_coords:
     defaults: { _controller: DadaAdvertisementBundle:Ajax:getCityFromCoords, _format: json }
     methods: [GET]
 
+dada_advertisement_homepage:
+    path: /annonces/{page}
+    defaults: { _controller: DadaAdvertisementBundle:Advert:homepage, page: 1 }
+    requirements:
+        page: \d+

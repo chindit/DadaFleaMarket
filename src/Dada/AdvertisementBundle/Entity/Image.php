@@ -166,30 +166,6 @@ class Image
     }
 
     /**
-     * Set advert
-     *
-     * @param \Dada\AdvertisementBundle\Entity\Advertisement $advert
-     *
-     * @return Image
-     */
-    public function setAdvert(\Dada\AdvertisementBundle\Entity\Advertisement $advert = null)
-    {
-        $this->advert = $advert;
-
-        return $this;
-    }
-
-    /**
-     * Get advert
-     *
-     * @return \Dada\AdvertisementBundle\Entity\Advertisement
-     */
-    public function getAdvert()
-    {
-        return $this->advert;
-    }
-
-    /**
      * Get file
      *
      * @return mixed
@@ -208,6 +184,28 @@ class Image
         $this->file = $file;
 
         return $this;
+    }
+
+    /**
+     * Set advert
+     *
+     * @param \Dada\AdvertisementBundle\Entity\Advertisement $advert
+     *
+     * @return Image
+     */
+    public function setAdvert(\Dada\AdvertisementBundle\Entity\Advertisement $advert = null)
+    {
+        $this->advert = $advert;
+        return $this;
+    }
+    /**
+     * Get advert
+     *
+     * @return \Dada\AdvertisementBundle\Entity\Advertisement
+     */
+    public function getAdvert()
+    {
+        return $this->advert;
     }
 
     /**

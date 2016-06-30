@@ -77,6 +77,11 @@ class Advertisement
      */
     private $images;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Dada\UserBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
     /**
      * Get id
@@ -272,6 +277,7 @@ class Advertisement
      */
     public function addImage(\Dada\AdvertisementBundle\Entity\Image $image)
     {
+        $image->setAdvert($this); //DON'T WORK
         $this->images[] = $image;
 
         return $this;
@@ -295,5 +301,29 @@ class Advertisement
     public function getImages()
     {
         return $this->images;
+    }
+
+    /**
+     * Set user
+     *
+     * @param Dada\UserBundle\Entity\User $user
+     *
+     * @return Advertisement
+     */
+    public function setUser(Dada\UserBundle\Entity\User $user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return Dada\UserBundle\Entity\User
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
