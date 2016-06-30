@@ -4,6 +4,7 @@ namespace Dada\AdvertisementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Advertisement
@@ -68,6 +69,13 @@ class Advertisement
     private $longitude;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="vues", type="integer")
+     */
+    private $vues;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Category")
      */
     private $category;
@@ -82,6 +90,35 @@ class Advertisement
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+
+    /**
+     * @var \DateTime $created
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    /**
+     * @var \DateTime $updated
+     *
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
+     */
+    private $updated;
+
+    /**
+     * @Gedmo\Slug(fields={"title"})
+     * @ORM\Column(length=128, unique=true)
+     */
+    private $slug;
+
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private $public;
 
     /**
      * Get id
@@ -239,9 +276,12 @@ class Advertisement
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($user = null)
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vues = 0;
+        if(!is_null($user))
+            $this->user = $user;
     }
 
     /**
@@ -325,5 +365,125 @@ class Advertisement
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set created
+     *
+     * @param \DateTime $created
+     *
+     * @return Advertisement
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set updated
+     *
+     * @param \DateTime $updated
+     *
+     * @return Advertisement
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * Get updated
+     *
+     * @return \DateTime
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     *
+     * @return Advertisement
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * Set vues
+     *
+     * @param integer $vues
+     *
+     * @return Advertisement
+     */
+    public function setVues($vues)
+    {
+        $this->vues = $vues;
+
+        return $this;
+    }
+
+    /**
+     * Get vues
+     *
+     * @return integer
+     */
+    public function getVues()
+    {
+        return $this->vues;
+    }
+
+    /**
+     * Set public
+     *
+     * @param boolean $public
+     *
+     * @return Advertisement
+     */
+    public function setPublic($public)
+    {
+        $this->public = $public;
+
+        return $this;
+    }
+
+    /**
+     * Get public
+     *
+     * @return boolean
+     */
+    public function getPublic()
+    {
+        return $this->public;
     }
 }

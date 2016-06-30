@@ -1,0 +1,60 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ parent() }}Mes annonces{% endblock %}
+
+{% block body %}
+    <h1>Mes annonces</h1>
+
+    {# Showing flash messages #}
+    {% for label, flashes in app.session.flashbag.all %}
+        {% for flash in flashes %}
+            <div class="alert alert-{{ label }}">
+                {{ flash }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="small-note">
+        <p>Vous pouvez à tout moment <a href="{{ path('dada_advertisement_add') }}" class="btn btn-primary">Créer une nouvelle annonce</a></p>
+    </div>
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Mes annonces</div>
+        {% if page == 1 %}
+        <div class="panel-body">
+            <p>Vous trouverez ici vos annonces classées de la plus récente à la plus ancienne.</p>
+        </div>
+        {% endif %}
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Prix</th>
+                    <th>Publiée</th>
+                    <th>Nombre de vues</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for advert in adverts %}
+                <tr>
+                    <td>{{ advert.title }}</td>
+                    <td>{{ advert.price }}€</td>
+                    <td>{{ advert.created|date('d/m/Y H:i:s') }}</td>
+                    <td>{{ advert.vues }}</td>
+                    <td><img src="{% if advert.public %}{{ asset('bundles/dadaadvertisement/images/valid.png') }}{% else %}{{ asset('bundles/dadaadvertisement/images/cancel.png') }}" alt="Status" />{% endif %}</td>
+                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin">Publier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
+                </tr>
+                {% else %}
+                {# No items #}
+                <tr>
+                    <td colspan="6">Aucune annonce à afficher</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

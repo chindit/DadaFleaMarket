@@ -17,6 +17,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Dada\CoreBundle\DadaCoreBundle(),
             new Dada\UserBundle\DadaUserBundle(),
             new Dada\AdvertisementBundle\DadaAdvertisementBundle(),

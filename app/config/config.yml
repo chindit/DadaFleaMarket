@@ -74,6 +74,13 @@ fos_user:
     firewall_name: main
     user_class: Dada\UserBundle\Entity\User
 
+#DoctrineExtensiors
+stof_doctrine_extensions:
+    default_locale: "%locale%"
+    orm:
+        default:
+            timestampable: true
+            sluggable: true
 
 # Swiftmailer Configuration
 swiftmailer:

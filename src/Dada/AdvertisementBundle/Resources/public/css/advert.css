@@ -11,3 +11,19 @@
 #advertisement_submit{
     margin-top: 7px;
 }
+.small-note{
+    background-color: lightyellow;
+    border: 1px solid yellowgreen;
+    padding: 7px;
+    border-radius: 15px;
+    margin: 7px;
+    font-size: small;
+    text-align: right;
+}
+.small-note .btn{
+    font-size: small;
+    padding: 2px;
+}
+.margin{
+    margin: 0px 5px;
+}

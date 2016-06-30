@@ -11,9 +11,11 @@ namespace Dada\AdvertisementBundle\Repository;
 class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
 
     public function findByPage($page, $user, $nbItems){
-        /*$query = $this->createQueryBuilder('a')
+        $query = $this->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameter('user', $user)
-            ->setFirstResult()*/
+            ->setFirstResult((($page-1)*$nbItems))
+            ->setMaxResults($nbItems);
+        return $query->getQuery()->getResult();
     }
 }

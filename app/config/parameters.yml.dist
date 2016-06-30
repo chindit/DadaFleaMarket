@@ -19,3 +19,4 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     googlemaps_api: youAPIkeyforGoogleMapsAPI #Google Maps Geocoding API
+    nb_items_page: 20 #Number of items per page

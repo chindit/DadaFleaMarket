@@ -19,7 +19,7 @@ class AdvertController extends Controller
      * @Security("has_role('ROLE_USER')")
      */
     public function addAction(Request $request){
-        $advert = new Advertisement();
+        $advert = new Advertisement($this->getUser());
         $form = $this->createForm(AdvertisementType::class, $advert);
 
         //Verify form validation
@@ -33,7 +33,7 @@ class AdvertController extends Controller
             }
             $em->flush();
             $this->get('session')->getFlashBag()->add('info', 'Votre annonce a bien été ajoutée');
-            $this->redirectToRoute('dada_advertisement_homepage');
+            return $this->redirectToRoute('dada_advertisement_homepage');
         }
 
         return $this->render('DadaAdvertisementBundle::add.html.twig', array('form' => $form->createView(), 'ajaxUrl' => $this->get('router')->generate('dada_ajax_city_from_coords', array('latitude' => 'unikey-lat', 'longitude' => 'unikey-long'))));
@@ -44,6 +44,16 @@ class AdvertController extends Controller
      */
     public function homepageAction($page){
         $em = $this->getDoctrine()->getRepository('DadaAdvertisementBundle:Advertisement');
-        //$listAdverst = $em->findByPage($page, $this->getUser());
+
+        //Retreiving Adverts
+        $listAdverts = $em->findByPage($page, $this->getUser(), $this->getParameter('nb_items_page'));
+
+        //Setting page to 1 if !results
+        if(empty($listAdverts) && $page > 1){
+            $listAdverts = $em->findByPage(1, $this->getUser(), $this->getParameter('nb_items_page'));
+        }
+
+        //Rendering
+        return $this->render('DadaAdvertisementBundle::homepage.html.twig', array('adverts' => $listAdverts, 'page' => $page));
     }
 }
