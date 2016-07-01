@@ -18,8 +18,7 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
      * @return array
      */
     public function findByPageAndUser($page, $user, $nbItems){
-        //$queryString = 'SELECT a FROM Dada\AdvertisementBundle\Entity\Advertisement a WHERE a.user = '.$user.' OFFSET '.(($page-1)*$nbItems)." LIMIT ".$nbItems." ORDER BY a.public DESC, a.published DESC";
-        //$query = $this->getEntityManager()->createQuery($queryString);
+
         $query = $this->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameter('user', $user)

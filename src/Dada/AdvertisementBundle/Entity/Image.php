@@ -196,6 +196,7 @@ class Image
     public function setAdvert(\Dada\AdvertisementBundle\Entity\Advertisement $advert = null)
     {
         $this->advert = $advert;
+        $this->advert->addImage($this);
         return $this;
     }
     /**

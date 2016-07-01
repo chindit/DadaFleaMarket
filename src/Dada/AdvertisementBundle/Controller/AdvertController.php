@@ -28,9 +28,9 @@ class AdvertController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($advert);
-            foreach($advert->getImages() as $image){
+            /*foreach($advert->getImages() as $image){
                 $image->setAdvert($advert);
-            }
+            }*/
             $em->flush();
             $this->get('session')->getFlashBag()->add('info', 'Votre annonce a bien été ajoutée');
             return $this->redirectToRoute('dada_advertisement_homepage');

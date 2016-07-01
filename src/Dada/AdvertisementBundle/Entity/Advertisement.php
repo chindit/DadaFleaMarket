@@ -278,7 +278,8 @@ class Advertisement
     public function __construct($user = null)
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->vues = 0;
+        $this->views = 0;
+        $this->published = new \DateTime();
         if(!is_null($user))
             $this->user = $user;
     }
@@ -316,7 +317,7 @@ class Advertisement
      */
     public function addImage(\Dada\AdvertisementBundle\Entity\Image $image)
     {
-        $image->setAdvert($this); //DON'T WORK
+        //$image->setAdvert($this); //DON'T WORK
         $this->images[] = $image;
 
         return $this;
