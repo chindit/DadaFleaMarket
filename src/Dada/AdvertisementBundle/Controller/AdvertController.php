@@ -46,14 +46,24 @@ class AdvertController extends Controller
         $em = $this->getDoctrine()->getRepository('DadaAdvertisementBundle:Advertisement');
 
         //Retreiving Adverts
-        $listAdverts = $em->findByPage($page, $this->getUser(), $this->getParameter('nb_items_page'));
+        $listAdverts = $em->findByPageAndUser($page, $this->getUser(), $this->getParameter('nb_items_page'));
 
         //Setting page to 1 if !results
         if(empty($listAdverts) && $page > 1){
-            $listAdverts = $em->findByPage(1, $this->getUser(), $this->getParameter('nb_items_page'));
+            $listAdverts = $em->findByPageAndUser(1, $this->getUser(), $this->getParameter('nb_items_page'));
         }
 
         //Rendering
         return $this->render('DadaAdvertisementBundle::homepage.html.twig', array('adverts' => $listAdverts, 'page' => $page));
+    }
+
+
+    public function showAdvertAction(Advertisement $advert){
+        //Increasing views
+        $advert->setViews($advert->getViews()+1);
+        $this->getDoctrine()->getManager()->flush();
+
+        //Rendering
+        return $this->render('DadaAdvertisementBundle:Show:advert.html.twig', array('advert' => $advert, 'user' => $this->getUser()));
     }
 }

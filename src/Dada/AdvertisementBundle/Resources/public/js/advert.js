@@ -38,11 +38,15 @@ function addInsertImageButton(){
 
 function addImageField(){
     var emplacement = $('#advertisement_images');
+    console.log(emplacement);
+
     var index = emplacement.find(':input').length;
+
     if(index == 3){
         emplacement.append('<div class="alert alert-warning">Seulement 3 images sont autorisées</div>');
         return;
     }
+
     var template = emplacement.attr('data-prototype').replace(/__name__label__/g, 'Image n°'+(index+1)).replace(/__name__/g, index).replace('<div>', '<div class="jumbotron">');
 
     var prototype = $(template);

@@ -10,12 +10,24 @@ namespace Dada\AdvertisementBundle\Repository;
  */
 class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
 
-    public function findByPage($page, $user, $nbItems){
+    /**
+     * Retuns all items in the given page for the given user
+     * @param $page int Page number
+     * @param $user User User object
+     * @param $nbItems int Nb items to show on a single page
+     * @return array
+     */
+    public function findByPageAndUser($page, $user, $nbItems){
+        //$queryString = 'SELECT a FROM Dada\AdvertisementBundle\Entity\Advertisement a WHERE a.user = '.$user.' OFFSET '.(($page-1)*$nbItems)." LIMIT ".$nbItems." ORDER BY a.public DESC, a.published DESC";
+        //$query = $this->getEntityManager()->createQuery($queryString);
         $query = $this->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameter('user', $user)
             ->setFirstResult((($page-1)*$nbItems))
-            ->setMaxResults($nbItems);
+            ->setMaxResults($nbItems)
+            ->addOrderBy('a.public', 'desc')
+            ->addOrderBy('a.published', 'asc');
         return $query->getQuery()->getResult();
     }
+
 }

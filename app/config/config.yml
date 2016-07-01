@@ -74,13 +74,30 @@ fos_user:
     firewall_name: main
     user_class: Dada\UserBundle\Entity\User
 
-#DoctrineExtensiors
+#DoctrineExtensions
 stof_doctrine_extensions:
     default_locale: "%locale%"
     orm:
         default:
             timestampable: true
             sluggable: true
+
+#LiipImagineBundle
+liip_imagine:
+    resolvers:
+       default:
+          web_path: ~
+
+    filter_sets:
+        cache: ~
+        thumbnailer:
+            quality: 75
+            filters:
+                thumbnail: { size: [150, 115], mode: outbound }
+        thumbthumber:
+            quality: 50
+            filters:
+                thumbnail: { size: [50, 45], mode: outbound }
 
 # Swiftmailer Configuration
 swiftmailer:

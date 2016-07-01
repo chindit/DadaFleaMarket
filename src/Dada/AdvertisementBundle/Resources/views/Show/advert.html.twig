@@ -1,0 +1,80 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ advert.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="page-header">
+                <h1>{{ advert.title }}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('dada_core_homepage') }}">Accueil</a></li>
+                {% if advert.user == user %}
+                    <li><a href="{{ path('dada_advertisement_homepage') }}">Mes annonces</a></li>
+                {% endif %}
+                <li class="active">{{ advert.title }}</li>
+            </ol>
+        </div>
+        <div class="row">
+            <p>Classé dans <a href="#">{{ advert.category.name }}</a></p>
+        </div>
+        <div class="row">
+            <div class="jumbotron">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <a href="#" class="thumbnail">
+                            {% if advert.images|length > 0 %}
+                                {% set imgName = "uploads/adverts/"~advert.images.0.name %}
+                                <img src="{{ imgName|imagine_filter('thumbnailer') }}" alt="{{ advert.slug }}" data-link="{{ asset(imgName) }}" data-width="{{ advert.images.0.width }}" data-height="{{ advert.images.0.height }}">
+                            {% else %}
+                                <img src="{{ asset('bundles/dadaadvertisement/images//no-picture.jpg') }}" alt="No picture submitted" />
+                            {% endif %}
+                            </a>
+                            {% if advert.images|length > 1 %}
+                                <div class="row">
+                                    {% set decalageXs = 24/(advert.images|length) %}
+                                    {% set decalageLg = 12/(advert.images|length) %}
+                                {% for index in advert.images %}
+                                    <div class="col-xs-{{ decalageXs }} col-sm-{{ decalageXs }} col-md-{{ decalageLg }} col-lg-{{ decalageLg }}">
+                                        {% set imgName = 'uploads/adverts/'~index.name %}
+                                        <a href="#" class="thumbnail"><img src="{{ imgName|imagine_filter('thumbthumber') }}" data-link="{{ asset(imgName) }}" data-width="{{ index.width }}" data-height="{{ index.height }}" alt="{{ advert.slug }}"></a>
+                                    </div>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            {% if advert.user == user %}
+                                <a href="#" class="btn btn-primary btn-small float-right">Éditer</a>
+                                <a href="#" class="btn btn-danger btn-small float-right margin">Dépublier</a>
+                            {% endif %}
+                            <p>{{ advert.price }}€</p>
+                            <p><a href="#" onclick="alert('Ho!  On devait pas coder ça!  Non mais!');" class="btn btn-primary">Acheter</a></p>
+                            <p class="font-normal">Cette annonce est située à : {{ advert.location }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h3 class="description">Description</h3>
+                        <p class="font-normal">{{ advert.description|nl2br }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Box to show image in full size #}
+    <div id="box-image"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts
+    '@DadaAdvertisementBundle/Resources/public/js/general.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

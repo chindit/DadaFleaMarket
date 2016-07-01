@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
             new Dada\CoreBundle\DadaCoreBundle(),
             new Dada\UserBundle\DadaUserBundle(),
             new Dada\AdvertisementBundle\DadaAdvertisementBundle(),

@@ -20,10 +20,30 @@
     font-size: small;
     text-align: right;
 }
-.small-note .btn{
-    font-size: small;
-    padding: 2px;
+.btn-small{ /* This style override others */
+    font-size: small !important;
+    padding: 2px !important;
+}
+.float-right{
+    float: right;
 }
 .margin{
     margin: 0px 5px;
+}
+.font-normal{
+    font-size: initial !important;
+}
+.description{
+    border-top: 1px solid grey;
+    padding-top: 20px;
+    text-decoration: underline;
+}
+#box-image{
+    display: none;
+    position: fixed;
+    top: 50px; left: 50%;
+    z-index:5;
+    background-color: lightgoldenrodyellow;
+    padding: 15px;
+    border-radius: 5px;
 }

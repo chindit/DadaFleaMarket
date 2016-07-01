@@ -1,6 +1,6 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}{{ parent() }}Mes annonces{% endblock %}
+{% block title %}{{ parent() }} - Mes annonces{% endblock %}
 
 {% block body %}
     <h1>Mes annonces</h1>
@@ -15,7 +15,7 @@
     {% endfor %}
 
     <div class="small-note">
-        <p>Vous pouvez à tout moment <a href="{{ path('dada_advertisement_add') }}" class="btn btn-primary">Créer une nouvelle annonce</a></p>
+        <p>Vous pouvez à tout moment <a href="{{ path('dada_advertisement_add') }}" class="btn btn-primary btn-small">Créer une nouvelle annonce</a></p>
     </div>
 
     <div class="panel panel-default">
@@ -32,8 +32,9 @@
                 <tr>
                     <th>Titre</th>
                     <th>Prix</th>
-                    <th>Publiée</th>
+                    <th>Ajoutée le</th>
                     <th>Nombre de vues</th>
+                    <th>Expire le</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -41,17 +42,18 @@
             <tbody>
             {% for advert in adverts %}
                 <tr>
-                    <td>{{ advert.title }}</td>
+                    <td><a href="{{ path('dada_advertisement_advert', {'slug': advert.slug}) }}">{{ advert.title }}</a></td>
                     <td>{{ advert.price }}€</td>
                     <td>{{ advert.created|date('d/m/Y H:i:s') }}</td>
-                    <td>{{ advert.vues }}</td>
-                    <td><img src="{% if advert.public %}{{ asset('bundles/dadaadvertisement/images/valid.png') }}{% else %}{{ asset('bundles/dadaadvertisement/images/cancel.png') }}" alt="Status" />{% endif %}</td>
-                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin">Publier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
+                    <td>{{ advert.views }}</td>
+                    <th>{% if advert.public %}{{ advert.published|date_modify("+10d")|date('d/m/Y H:i:s') }}{% else %}---{% endif %}</th>
+                    <td><img src="{% if advert.public %}{{ asset('bundles/dadaadvertisement/images/valid.png') }}{% else %}{{ asset('bundles/dadaadvertisement/images/cancel.png') }}{% endif %}" alt="Status" /></td>
+                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin">Publier</a>{% else %}<a href="#" class="btn btn-primary margin">Dépublier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
                 </tr>
                 {% else %}
                 {# No items #}
                 <tr>
-                    <td colspan="6">Aucune annonce à afficher</td>
+                    <td colspan="7">Aucune annonce à afficher</td>
                 </tr>
             {% endfor %}
             </tbody>

@@ -12,3 +12,7 @@ dada_advertisement_homepage:
     defaults: { _controller: DadaAdvertisementBundle:Advert:homepage, page: 1 }
     requirements:
         page: \d+
+
+dada_advertisement_advert:
+    path: /annonce/{slug}
+    defaults: { _controller: DadaAdvertisementBundle:Advert:showAdvert }

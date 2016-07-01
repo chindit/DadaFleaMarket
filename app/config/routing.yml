@@ -13,3 +13,7 @@ dada_advertisement:
 #FOSUserBunle routing
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+#LiiPImagine
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"

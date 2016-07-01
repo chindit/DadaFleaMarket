@@ -73,7 +73,7 @@ class Advertisement
      *
      * @ORM\Column(name="vues", type="integer")
      */
-    private $vues;
+    private $views;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category")
@@ -101,12 +101,11 @@ class Advertisement
     private $created;
 
     /**
-     * @var \DateTime $updated
+     * @var \DateTime $published
      *
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="published", type="datetime")
      */
-    private $updated;
+    private $published;
 
     /**
      * @Gedmo\Slug(fields={"title"})
@@ -392,27 +391,27 @@ class Advertisement
     }
 
     /**
-     * Set updated
+     * Set published
      *
-     * @param \DateTime $updated
+     * @param \DateTime $published
      *
      * @return Advertisement
      */
-    public function setUpdated($updated)
+    public function setPublished($published)
     {
-        $this->updated = $updated;
+        $this->published = $published;
 
         return $this;
     }
 
     /**
-     * Get updated
+     * Get published
      *
      * @return \DateTime
      */
-    public function getUpdated()
+    public function getPublished()
     {
-        return $this->updated;
+        return $this->published;
     }
 
     /**
@@ -440,27 +439,27 @@ class Advertisement
     }
 
     /**
-     * Set vues
+     * Set views
      *
-     * @param integer $vues
+     * @param integer $views
      *
      * @return Advertisement
      */
-    public function setVues($vues)
+    public function setViews($views)
     {
-        $this->vues = $vues;
+        $this->views = $views;
 
         return $this;
     }
 
     /**
-     * Get vues
+     * Get views
      *
      * @return integer
      */
-    public function getVues()
+    public function getViews()
     {
-        return $this->vues;
+        return $this->views;
     }
 
     /**
