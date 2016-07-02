@@ -27,7 +27,7 @@
         </div>
         {% endif %}
 
-        <table class="table">
+        <table class="table" id="adverts-table" data-link="{{ path('dada_ajax_publish', {'id': 1}) }}">
             <thead>
                 <tr>
                     <th>Titre</th>
@@ -59,6 +59,7 @@
             </tbody>
         </table>
     </div>
+    {{ render(controller('DadaAdvertisementBundle:Advert:renderHomepagePagination', {'page': page})) }}
 {% endblock %}
 
 {% block javascripts %}

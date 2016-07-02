@@ -20,6 +20,7 @@
 namespace Dada\AdvertisementBundle\Controller;
 
 
+use Dada\AdvertisementBundle\Entity\Advertisement;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -40,6 +41,21 @@ class AjaxController extends Controller{
         $response = new JsonResponse();
         $response->setContent($result);
         $response->setCharset('UTF-8');
+        return $response;
+    }
+
+    /**
+     * Reverse advert's published status
+     *
+     * @param $advert Advert Advert
+     * @return bool Exit status
+     */
+    public function reversePublishedStatusAction(Advertisement $advert){
+        $advert->setPublic(!$advert->getPublic());
+        $this->getDoctrine()->getManager()->flush();
+        $response = new JsonResponse();
+        $response->setContent('true');
+
         return $response;
     }
 }

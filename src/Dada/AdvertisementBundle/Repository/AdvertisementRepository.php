@@ -43,4 +43,20 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
         return $query->getQuery()->getResult();
     }
 
+    /**
+     * Return number of pages
+     *
+     * @param $user User
+     * @param $nbItems int Number of items per page
+     * @return int number of pages
+     */
+    public function findPageCount($user, $nbItems){
+        $query = $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.user = :user')
+            ->setParameter('user', $user);
+        $result = $query->getQuery()->getSingleScalarResult();
+        return ceil($result/$nbItems);
+    }
+
 }

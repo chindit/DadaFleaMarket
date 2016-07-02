@@ -1,0 +1,50 @@
+<div class="controls-fixed">
+    <ul class="pagination" id="pagination">
+        {# Preparing variable for next page #}
+        {% set nextAvailable = false %}
+        {# If more than one page AND not the first#}
+        {% if pagination.total == 1 or pagination.current == 1 %}
+            <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        {% else %}
+            <li><a href="{{ path(pathName, {'page': pagination.current-1}) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        {% endif %}
+        {# If pagination too big, we're not showing all #}
+        {% if pagination.current > 2 %}
+            {# We show two previous pages, no more #}
+            <li><a href="{{ path(pathName, {'page': pagination.current-2}) }}">{{ pagination.current -2 }}</a></li>
+            <li><a href="{{ path(pathName, {'page': pagination.current-1}) }}">{{ pagination.current -1 }}</a></li>
+            <li class="active"><a href="#">{{ pagination.current }} <span class="sr-only">(current)</span></a></li>
+        {% else %}
+            {# We are not at page 3 or more #}
+            {# We show every previous page #}
+            {% if pagination.current == 2 %}
+                <li><a href="{{ 1 }}">1</a></li>
+            {% endif %}
+            {# Current page #}
+            <li class="active"><a href="#">{{ pagination.current }}</a></li>
+        {% endif %}
+        {# Next pagination #}
+        {# We check if next page exist two times #}
+        {% if pagination.total >= (pagination.current+1) %}
+            <li><a href="{{ path(pathName, {'page': pagination.current+1}) }}">{{ pagination.current +1 }}</a></li>
+            {% set nextAvailable = true %}
+        {% endif %}
+        {% if pagination.total >= (pagination.current+2) %}
+            <li><a href="{{ path(pathName, {'page': pagination.current+2}) }}">{{ pagination.current +2 }}</a></li>
+        {% endif %}
+        {# If next page is available, we activate the button #}
+        {% if nextAvailable %}
+            <li>
+                <a href="{{ path(pathName, {'page': pagination.current+1}) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="disabled">
+                <a href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>

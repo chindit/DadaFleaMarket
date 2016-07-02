@@ -38,6 +38,10 @@
     padding-top: 20px;
     text-decoration: underline;
 }
+/* Used for pagination in User's homepage */
+.controls-fixed{
+    text-align: center;
+}
 #box-image{
     display: none;
     position: fixed;

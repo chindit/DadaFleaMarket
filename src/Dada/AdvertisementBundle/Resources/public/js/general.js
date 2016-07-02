@@ -33,11 +33,31 @@ $(document).ready(function() {
      */
     $('a.ajax-publish').click(function(event){
         event.preventDefault();
-        var id = ($(this).attr('data-id'));
+        var id = ($(this).attr('data-id')); //Advert ID
+        var image = $(this).parent().prev().children(); //Status image
+        var txtOk = 'Publier';
+        var txtKo = 'Dépublier';
+        var imgOk = '/DadaFleaMarket/web/bundles/dadaadvertisement/images/valid.png';
+        var imgKo = '/DadaFleaMarket/web/bundles/dadaadvertisement/images/cancel.png';
+
         var reponse = confirm('Êtes-vous certain de vouloir '+$(this).html()+' cette annonce?');
-        if(reponse === true)
-            console.log('OK');
-        else
-            console.log('KO');
+        if(reponse === true) {
+            var url = $('#adverts-table').attr('data-link').replace('1', id);
+            $.getJSON(url, function (json) {
+                if(json == true) {
+                    alert('Le statut a correctement été changé');
+                }
+                else
+                    alert('Une erreur est survenue.  Le statut n\'a pas été changé');
+            });
+            if($(this).html() == txtOk){
+                $(this).html(txtKo);
+                image.attr('src', image.attr('src').replace('valid.png', 'cancel.png'));
+            }
+            else{
+                $(this).html(txtOk);
+                image.attr('src', image.attr('src').replace('cancel.png', 'valid.png'));
+            }
+        }
     });
 });

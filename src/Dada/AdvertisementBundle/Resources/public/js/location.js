@@ -6,13 +6,12 @@
  * @param pos
  */
 function locationSuccess(pos) {
-    var crd = pos.coords;console.log(crd);
+    var crd = pos.coords;
     var url = $('#googlemaps-url').html();
     url = url.replace('unikey-lat', crd.latitude);
     url = url.replace('unikey-long', crd.longitude);
 
     $.getJSON(url, function(json){
-        console.log(json);
         $('#advertisement_location').val(json.results[0].address_components[2].long_name);
         $('#advertisement_latitude').val(json.results[2].geometry.location.lat);
         $('#advertisement_longitude').val(json.results[2].geometry.location.lng);
