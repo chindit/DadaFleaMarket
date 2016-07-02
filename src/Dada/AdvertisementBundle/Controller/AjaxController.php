@@ -24,6 +24,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AjaxController extends Controller{
+    /**
+     * Returns city name from GPS coordinates
+     *
+     * @param $latitude
+     * @param $longitude
+     * @return JsonResponse
+     */
     public function getCityFromCoordsAction($latitude, $longitude){
         if(is_float($latitude) && is_float($longitude))
             throw new \InvalidArgumentException('App was expecting float as GPS coords. «'.gettype($latitude).'» and «'.gettype($longitude).'» given.');

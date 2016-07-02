@@ -4,6 +4,7 @@ namespace Dada\UserBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -20,6 +21,7 @@ class User extends BaseUser
 
     /**
      * @ORM\Column(name="city", type="string", length=75)
+     * @Assert\NotBlank(message="Please enter your city.", groups={"Registration", "Profile"})
      */
     protected $city;
 

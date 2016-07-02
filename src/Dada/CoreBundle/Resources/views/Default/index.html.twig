@@ -10,26 +10,22 @@
 
         <div class="row marketing">
             <h2>Nos dernières annonces</h2>
-            <div class="col-lg-6">
-                <h4>Subheading</h4>
-                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-                <h4>Subheading</h4>
-                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-                <h4>Subheading</h4>
-                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-            </div>
-
-            <div class="col-lg-6">
-                <h4>Subheading</h4>
-                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-                <h4>Subheading</h4>
-                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-                <h4>Subheading</h4>
-                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-            </div>
+            {% for advert in adverts %}
+                {# Starting div #}
+                {% if loop.index == 1 or loop.index == 4 %}
+                    <div class="col-lg-6">
+                {% endif %}
+                <h4>{{ advert.title }}</h4>
+                <p>{{ advert.description|slice(0, 250) }}</p>
+                <a href="{{ path('dada_advertisement_advert', {'slug': advert.slug}) }}" class="btn-small float-right">Voir plus</a>
+                {# Ending div #}
+                {% if loop.index == 3 or loop.last %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="col-lg-6">
+                    <p>Malheureusement, aucune annonce n'a été créée :(</p>
+                </div>
+            {% endfor %}
         </div>
 {% endblock %}

@@ -27,4 +27,17 @@ $(document).ready(function() {
     $('#box-image').click(function(){
        $(this).hide();
     });
+
+    /**
+     * (Un)publish an advert
+     */
+    $('a.ajax-publish').click(function(event){
+        event.preventDefault();
+        var id = ($(this).attr('data-id'));
+        var reponse = confirm('Êtes-vous certain de vouloir '+$(this).html()+' cette annonce?');
+        if(reponse === true)
+            console.log('OK');
+        else
+            console.log('KO');
+    });
 });

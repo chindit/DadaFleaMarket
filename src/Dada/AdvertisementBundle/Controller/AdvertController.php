@@ -7,6 +7,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Dada\AdvertisementBundle\Form\AdvertisementType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\XliffFileLoader;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
 class AdvertController extends Controller
 {
@@ -19,6 +22,23 @@ class AdvertController extends Controller
      * @Security("has_role('ROLE_USER')")
      */
     public function addAction(Request $request){
+
+        // create the Translator
+$translator = new Translator('fr');
+        $translator->addLoader('yml', new XliffFileLoader());
+
+        $translator->addResource('yml', 'messages.fr.yml', 'fr_FR');
+/*// somehow load some translations into it
+$translator->addLoader('xlf', new XliffFileLoader());
+$translator->addResource(
+    'xlf',
+    __DIR__.'/messages.fr.xlf',
+    'en'
+);
+
+// add the TranslationExtension (gives us trans and transChoice filters)
+$this->get('twig')->addExtension(new TranslationExtension($translator));*/
+
         $advert = new Advertisement($this->getUser());
         $form = $this->createForm(AdvertisementType::class, $advert);
 

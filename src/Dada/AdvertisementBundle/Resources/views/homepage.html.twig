@@ -48,7 +48,7 @@
                     <td>{{ advert.views }}</td>
                     <th>{% if advert.public %}{{ advert.published|date_modify("+10d")|date('d/m/Y H:i:s') }}{% else %}---{% endif %}</th>
                     <td><img src="{% if advert.public %}{{ asset('bundles/dadaadvertisement/images/valid.png') }}{% else %}{{ asset('bundles/dadaadvertisement/images/cancel.png') }}{% endif %}" alt="Status" /></td>
-                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin">Publier</a>{% else %}<a href="#" class="btn btn-primary margin">Dépublier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
+                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Publier</a>{% else %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Dépublier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
                 </tr>
                 {% else %}
                 {# No items #}
@@ -59,4 +59,13 @@
             </tbody>
         </table>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts
+    '@DadaAdvertisementBundle/Resources/public/js/general.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

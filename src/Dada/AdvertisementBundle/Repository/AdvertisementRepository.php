@@ -18,8 +18,6 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
      * @return array
      */
     public function findByPageAndUser($page, $user, $nbItems){
-        //$queryString = 'SELECT a FROM Dada\AdvertisementBundle\Entity\Advertisement a WHERE a.user = '.$user.' OFFSET '.(($page-1)*$nbItems)." LIMIT ".$nbItems." ORDER BY a.public DESC, a.published DESC";
-        //$query = $this->getEntityManager()->createQuery($queryString);
         $query = $this->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameter('user', $user)
@@ -27,6 +25,21 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
             ->setMaxResults($nbItems)
             ->addOrderBy('a.public', 'desc')
             ->addOrderBy('a.published', 'asc');
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Return $nb last adverts
+     * @param $nb int number of results to return
+     * @return array
+     */
+    public function findLast($nb){
+        if(!is_numeric($nb) && $nb > 0)
+            throw new \InvalidArgumentException('An integer value was expected');
+        $query = $this->createQueryBuilder('a')
+            ->where('a.public = true')
+            ->orderBy('a.published', 'desc')
+            ->setMaxResults(6);
         return $query->getQuery()->getResult();
     }
 

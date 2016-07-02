@@ -19,7 +19,12 @@
 {% block javascripts %}
     {{ parent() }}
     {% javascripts
-    '@DadaAdvertisementBundle/Resources/public/js/*'
+    '@DadaAdvertisementBundle/Resources/public/js/form.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts
+    '@DadaAdvertisementBundle/Resources/public/js/location.js'
     %}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
