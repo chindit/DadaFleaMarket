@@ -27,7 +27,7 @@
         </div>
         {% endif %}
 
-        <table class="table" id="adverts-table" data-link="{{ path('dada_ajax_publish', {'id': 1}) }}">
+        <table class="table" id="adverts-table" data-publish-link="{{ path('dada_ajax_publish', {'id': 1}) }}" data-delete-link="{{ path('dada_ajax_delete', {'id': 1}) }}">
             <thead>
                 <tr>
                     <th>Titre</th>
@@ -48,7 +48,7 @@
                     <td>{{ advert.views }}</td>
                     <th>{% if advert.public %}{{ advert.published|date_modify("+10d")|date('d/m/Y H:i:s') }}{% else %}---{% endif %}</th>
                     <td><img src="{% if advert.public %}{{ asset('bundles/dadaadvertisement/images/valid.png') }}{% else %}{{ asset('bundles/dadaadvertisement/images/cancel.png') }}{% endif %}" alt="Status" /></td>
-                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Publier</a>{% else %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Dépublier</a>{% endif %}<a href="#" class="btn btn-danger margin">Supprimer</a></td>
+                    <td>{% if not advert.public %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Publier</a>{% else %}<a href="#" class="btn btn-primary margin ajax-publish" data-id="{{ advert.id }}">Dépublier</a>{% endif %}<a href="{{ path('dada_advertisement_edit', {'slug': advert.slug}) }}" class="btn btn-success">Éditer</a><a href="#" class="btn btn-danger margin ajax-delete" data-id="{{ advert.id }}">Supprimer</a></td>
                 </tr>
                 {% else %}
                 {# No items #}

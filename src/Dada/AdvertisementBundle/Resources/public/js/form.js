@@ -42,6 +42,14 @@ function addImageField(){
 
     var index = emplacement.find(':input').length;
 
+    //Checking if we are editing and, if yes, how many images do we have
+    var editKey = $('#edit-nb-images');
+    if(editKey != undefined){
+        //Key found -> edition
+        index = index+parseInt(editKey.attr('data-images'));
+        console.log(index);
+    }
+
     if(index == 3){
         emplacement.append('<div class="alert alert-warning">Seulement 3 images sont autorisées</div>');
         return;

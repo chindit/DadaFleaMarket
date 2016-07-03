@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Dada\AdvertisementBundle\Form\AdvertisementType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 
 class AdvertController extends Controller
@@ -39,6 +40,35 @@ class AdvertController extends Controller
         }
 
         return $this->render('DadaAdvertisementBundle::add.html.twig', array('form' => $form->createView(), 'ajaxUrl' => $this->get('router')->generate('dada_ajax_city_from_coords', array('latitude' => 'unikey-lat', 'longitude' => 'unikey-long'))));
+    }
+
+    /**
+     * Edit an advert
+     *
+     * @param Advertisement $advert Avert to edit
+     * @param Request $request Form submission
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response Rendering
+     */
+    public function editAction(Advertisement $advert, Request $request){
+        if($advert->getUser() != $this->getUser())
+            throw new UnauthorizedHttpException('Cette annonce ne vous appartient pas!  Garnement va!');
+        $form = $this->createForm(AdvertisementType::class, $advert);
+
+        //Verify form validation
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            foreach($advert->getImages() as $image){
+                $image->setAdvert($advert);
+            }
+            $em->flush();
+            $this->get('session')->getFlashBag()->add('info', 'Votre annonce a bien été mise à jour');
+            return $this->redirectToRoute('dada_advertisement_homepage');
+        }
+
+        return $this->render('DadaAdvertisementBundle::add.html.twig', array('form' => $form->createView(), 'advert' => $advert, 'ajaxUrl' => $this->get('router')->generate('dada_ajax_city_from_coords', array('latitude' => 'unikey-lat', 'longitude' => 'unikey-long'))));
     }
 
     /**

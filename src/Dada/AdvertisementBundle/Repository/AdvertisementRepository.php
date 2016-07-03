@@ -59,4 +59,21 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
         return ceil($result/$nbItems);
     }
 
+    /**
+     * Return all entries published > to $maxDays
+     *
+     * @param $maxDays int number of days after what Adevrts are automatically unpublished
+     * @return array Advertisemenst
+     */
+    public function cleanOldEntries($maxDays){
+        $time = new \DateTime();
+        $interval = new \DateInterval('P'.$maxDays.'D');
+        $time->sub($interval);
+        $query = $this->createQueryBuilder('a')
+            ->where('a.public = true')
+            ->andWhere('a.published < :time')
+            ->setParameter('time', $time);
+        return $query->getQuery()->getResult();
+    }
+
 }

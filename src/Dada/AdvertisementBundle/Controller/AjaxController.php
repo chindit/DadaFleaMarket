@@ -23,6 +23,7 @@ namespace Dada\AdvertisementBundle\Controller;
 use Dada\AdvertisementBundle\Entity\Advertisement;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class AjaxController extends Controller{
     /**
@@ -49,9 +50,40 @@ class AjaxController extends Controller{
      *
      * @param $advert Advert Advert
      * @return bool Exit status
+     *
+     * @Security("has_role('ROLE_USER')")
      */
     public function reversePublishedStatusAction(Advertisement $advert){
+        if($advert->getUser() != $this->getUser()){
+            //throw new \UnauthorizedHttpException('Vous n\'êtes pas autorisé à modifier le status de cette annonce');
+            $response = new JsonResponse();
+            $response->setContent('false');
+            return $response;
+        }
         $advert->setPublic(!$advert->getPublic());
+        $this->getDoctrine()->getManager()->flush();
+        $response = new JsonResponse();
+        $response->setContent('true');
+
+        return $response;
+    }
+
+    /**
+     * Delete (via Ajax) an Advert
+     *
+     * @param Advertisement $advert
+     * @return bool Exit status
+     *
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function deleteAdvertAction(Advertisement $advert){
+        if($advert->getUser() != $this->getUser()){
+            //throw new \UnauthorizedHttpException('Vous n\'êtes pas autorisé à supprimer cette annonce');
+            $response = new JsonResponse();
+            $response->setContent('false');
+            return $response;
+        }
+        $this->getDoctrine()->getManager()->remove($advert);
         $this->getDoctrine()->getManager()->flush();
         $response = new JsonResponse();
         $response->setContent('true');

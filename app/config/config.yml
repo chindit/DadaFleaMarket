@@ -8,6 +8,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: fr
+    max_age: 10 #Max age (in days) for all adverts before being unpublished
 
 framework:
     #esi:             ~

@@ -29,7 +29,7 @@ class AdvertisementType extends AbstractType
             ->add('title', TextType::class, ['label' => 'add.labels.title'])
             ->add('description')
             ->add('images', CollectionType::class, array('entry_type' => ImageType::class, 'allow_add' => true, 'allow_delete' => true))
-            ->add('price', IntegerType::class, array('label' => 'Prix (€)', 'attr' => array('step' => '0.01', 'min' => "0", 'value' => "0")))
+            ->add('price', IntegerType::class, array('label' => 'Prix (€)', 'attr' => array('step' => '0.01', 'min' => "0", 'placeholder' => "0")))
             ->add('location', TextType::class, array('label' => 'Emplacement'))
             ->add('current_location', ButtonType::class, array('attr' => array('class' => 'btn btn-success'), 'label' => 'Utiliser ma position actuelle'))
             ->add('latitude', HiddenType::class)

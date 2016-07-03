@@ -35,14 +35,14 @@ $(document).ready(function() {
         event.preventDefault();
         var id = ($(this).attr('data-id')); //Advert ID
         var image = $(this).parent().prev().children(); //Status image
-        var txtOk = 'Publier';
-        var txtKo = 'Dépublier';
+        var txtKo = 'Publier';
+        var txtOk = 'Dépublier'; //Ok means advers is publicated NOW -> Button's text is ,logically «UNpublish»
         var imgOk = '/DadaFleaMarket/web/bundles/dadaadvertisement/images/valid.png';
         var imgKo = '/DadaFleaMarket/web/bundles/dadaadvertisement/images/cancel.png';
 
         var reponse = confirm('Êtes-vous certain de vouloir '+$(this).html()+' cette annonce?');
         if(reponse === true) {
-            var url = $('#adverts-table').attr('data-link').replace('1', id);
+            var url = $('#adverts-table').attr('data-publish-link').replace('1', id);
             $.getJSON(url, function (json) {
                 if(json == true) {
                     alert('Le statut a correctement été changé');
@@ -59,5 +59,29 @@ $(document).ready(function() {
                 image.attr('src', image.attr('src').replace('cancel.png', 'valid.png'));
             }
         }
+    });
+
+    /**
+     * Delete an element
+     */
+    $('a.ajax-delete').click(function(event){
+        event.preventDefault();
+        //Confirmation
+        var reponse = confirm('Vous êtes sur le point de SUPPRIMER cette annonce.  Cette action est définitive.  Êtes-vous CERTAIN de vouloir faire ça?');
+        if(reponse === true) {
+            var id = $(this).attr('data-id');
+            var url = $('#adverts-table').attr('data-delete-link').replace('1', id);
+            var tr = $(this).parent().parent();
+            $.getJSON(url, function (json) {
+                if(json == true) {
+                    //Selecting <tr> and hiding it
+                    tr.hide();
+                    alert('Votre annonce a bien été supprimée. Snif ;(');
+                }
+                else
+                    alert('Une erreur est survenue.  L\'annonce n\'a pas été supprimée');
+            });
+        }
+        //Rien en cas de else
     });
 });

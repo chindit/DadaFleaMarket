@@ -49,8 +49,8 @@
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             {% if advert.user == user %}
-                                <a href="#" class="btn btn-primary btn-small float-right">Éditer</a>
-                                <a href="#" class="btn btn-danger btn-small float-right margin">Dépublier</a>
+                                <a href="{{ path('dada_advertisement_edit', {'slug': advert.slug}) }}" class="btn btn-primary btn-small float-right">Éditer</a>
+                                <a href="#" class="btn btn-danger btn-small float-right margin ajax-publish" data-id="{{ advert.id }}">Dépublier</a>
                             {% endif %}
                             <p>{{ advert.price }}€</p>
                             <p><a href="#" onclick="alert('Ho!  On devait pas coder ça!  Non mais!');" class="btn btn-primary">Acheter</a></p>

@@ -7,6 +7,14 @@
             {{ form_start(form, {'attr': {'class': 'fos_user_form'}}) }}
             {{ form_row(form.title) }}
             {{ form_row(form.description) }}
+            {# Particular case: edition #}
+            {% if advert is defined %}
+                <p id="edit-nb-images" data-images="{{ advert.images|length }}">{{ advert.images|length }} image{% if advert.images|length != 1 %}s{% endif %} attachée{% if advert.images|length != 1 %}s{% endif %} à cette annonce.</p>
+                {% for image in advert.images %}
+                    <p>{{ image.name }}</p>
+                {% endfor %}
+            {% endif %}
+            {# End of edition #}
             {{ form_row(form.images) }}
             <a href="#" id="insert_image" class="btn btn-primary">Ajouter une autre image</a>
             {{ form_widget(form) }}

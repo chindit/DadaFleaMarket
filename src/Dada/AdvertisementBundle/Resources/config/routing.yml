@@ -2,6 +2,10 @@ dada_advertisement_add:
     path:     /add
     defaults: { _controller: DadaAdvertisementBundle:Advert:add }
 
+dada_advertisement_edit:
+    path: /edit/{slug}
+    defaults: { _controller: DadaAdvertisementBundle:Advert:edit }
+
 dada_ajax_city_from_coords:
     path: /ajax/city/{latitude}/{longitude}
     defaults: { _controller: DadaAdvertisementBundle:Ajax:getCityFromCoords, _format: json }
@@ -11,6 +15,15 @@ dada_ajax_publish:
     path: /ajax/publish/{id}
     defaults: { _controller: DadaAdvertisementBundle:Ajax:reversePublishedStatus, _format: json }
     methods: [GET]
+    requirements:
+        id: \d+
+
+dada_ajax_delete:
+    path: /ajax/delete/{id}
+    defaults: { _controller: DadaAdvertisementBundle:Ajax:deleteAdvert, _format: json }
+    methods: [GET]
+    requirements:
+        id: \d+
 
 dada_advertisement_homepage:
     path: /annonces/{page}
@@ -21,3 +34,7 @@ dada_advertisement_homepage:
 dada_advertisement_advert:
     path: /annonce/{slug}
     defaults: { _controller: DadaAdvertisementBundle:Advert:showAdvert }
+
+dada_cron_unpublish:
+    path: /cron/unpublish
+    defaults: { _controller: DadaAdvertisementBundle:Cron:cleanOldEntries }
