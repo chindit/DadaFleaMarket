@@ -22,6 +22,7 @@ namespace Dada\UserBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * This class overrides default FOS Registration form to add a «city» field.
@@ -32,7 +33,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class RegistrationType extends AbstractType{
 
     public function buildForm(FormBuilderInterface $builder, array $options){
-        $builder->add('city', );
+        $builder->add('city', TextType::class, ['label' => 'Votre ville']);
     }
 
     public function getParent(){

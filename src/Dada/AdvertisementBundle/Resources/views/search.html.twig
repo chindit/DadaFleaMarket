@@ -1,0 +1,109 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ parent() }}Votre recherche{% endblock %}
+
+{% block body %}
+    <p>Votre recherche dans la ville de <strong>{{ query }}</strong> a renvoyé <strong>{{ nbResults }}</strong> résultat{% if nbResults != 1 %}s{% endif %}</p>
+    {% if listeCateg is defined %}
+    <p>Vous pouvez affiner votre recherche par catégories</p>
+    <form method="post" action="{{ path('dada_subsearch_categ') }}">
+        {# Fields used for current search args #}
+        <input type="hidden" name="lat" value="{{ lat }}">
+        <input type="hidden" name="lng" value="{{ lng }}">
+        <input type="hidden" name="query" value="{{ query }}">
+        <select name="categ">
+            {% for elem in listeCateg %}
+                <option value="{{ elem.id }}">{{ elem.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" class="btn btn-default" value="Valider">
+    </form>
+    {% else %}
+        <p>Vous recherchez les annonces dans la catégorie <strong>{{ categ.name }}</strong></p>
+    {% endif %}
+    <hr>
+    {% for advert in results %}
+        <div class="jumbotron">
+            <h3>{{ advert.title }}</h3>
+            <p class="font-normal">{{ advert.description|slice(0, 250) }}</p>
+            <a href="{{ path('dada_advertisement_advert', {'slug': advert.slug}) }}" class="btn-small float-right">Voir plus</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune annonce trouvée pour cet endroit :(</div>
+    {% endfor %}
+
+    {# Pagination #}
+    <div class="controls-fixed">
+        <ul class="pagination" id="pagination">
+            {# Preparing variable for next page #}
+            {% set nextAvailable = false %}
+            {# If more than one page AND not the first#}
+            {% if pagination.total == 1 or pagination.current == 1 %}
+                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            {% else %}
+                {% if listeCateg is defined %}
+                <li><a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current-1}) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    {% else %}
+                        <li><a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current-1}) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    {% endif %}
+            {% endif %}
+            {# If pagination too big, we're not showing all #}
+            {% if pagination.current > 2 %}
+                {# We show two previous pages, no more #}
+                {% if listeCateg is defined %}
+                <li><a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current-2}) }}">{{ pagination.current -2 }}</a></li>
+                <li><a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current-1}) }}">{{ pagination.current -1 }}</a></li>
+                {% else %}
+                    <li><a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current-2}) }}">{{ pagination.current -2 }}</a></li>
+                    <li><a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current-1}) }}">{{ pagination.current -1 }}</a></li>
+                    {% endif %}
+                <li class="active"><a href="#">{{ pagination.current }} <span class="sr-only">(current)</span></a></li>
+            {% else %}
+                {# We are not at page 3 or more #}
+                {# We show every previous page #}
+                {% if pagination.current == 2 %}
+                    <li><a href="{{ 1 }}">1</a></li>
+                {% endif %}
+                {# Current page #}
+                <li class="active"><a href="#">{{ pagination.current }}</a></li>
+            {% endif %}
+            {# Next pagination #}
+            {# We check if next page exist two times #}
+            {% if pagination.total >= (pagination.current+1) %}
+                {% if listeCateg is defined %}
+                <li><a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current+1}) }}">{{ pagination.current +1 }}</a></li>
+                {% else %}
+                    <li><a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current+1}) }}">{{ pagination.current +1 }}</a></li>
+                {% endif %}
+                {% set nextAvailable = true %}
+            {% endif %}
+            {% if pagination.total >= (pagination.current+2) %}
+                {% if listeCateg is defined %}
+                <li><a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current+2}) }}">{{ pagination.current +2 }}</a></li>
+                {% else %}
+                    <li><a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current+2}) }}">{{ pagination.current +2 }}</a></li>
+                {% endif %}
+            {% endif %}
+            {# If next page is available, we activate the button #}
+            {% if nextAvailable %}
+                <li>
+                {% if listeCateg is defined %}
+                    <a href="{{ path('dada_search_from_town_page', {'lat': lat, 'long': lng, 'query': query, 'page': pagination.current+1}) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                {% else %}
+                    <a href="{{ path('dada_subsearch_categ_page', {'lat': lat, 'long': lng, 'query': query, 'categ': categ.id, 'page': pagination.current+1}) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

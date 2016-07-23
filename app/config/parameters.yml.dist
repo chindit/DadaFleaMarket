@@ -20,3 +20,4 @@ parameters:
 
     googlemaps_api: youAPIkeyforGoogleMapsAPI #Google Maps Geocoding API
     nb_items_page: 20 #Number of items per page
+    default_search_radius: 5 #Default search radius in minutes (~1-2Km/minute)

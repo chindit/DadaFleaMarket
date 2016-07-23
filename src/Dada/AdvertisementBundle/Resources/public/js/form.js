@@ -38,16 +38,16 @@ function addInsertImageButton(){
 
 function addImageField(){
     var emplacement = $('#advertisement_images');
-    console.log(emplacement);
+    //console.log(emplacement);
 
     var index = emplacement.find(':input').length;
 
     //Checking if we are editing and, if yes, how many images do we have
     var editKey = $('#edit-nb-images');
-    if(editKey != undefined){
+    if(editKey.attr('data-images') != undefined){
         //Key found -> edition
         index = index+parseInt(editKey.attr('data-images'));
-        console.log(index);
+        //console.log(index);
     }
 
     if(index == 3){

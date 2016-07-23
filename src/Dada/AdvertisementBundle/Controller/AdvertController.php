@@ -119,4 +119,5 @@ class AdvertController extends Controller
         //Rendering
         return $this->render('DadaAdvertisementBundle:Show:advert.html.twig', array('advert' => $advert, 'user' => $this->getUser()));
     }
+
 }

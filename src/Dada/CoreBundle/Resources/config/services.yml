@@ -1,4 +1,5 @@
 services:
-#    dada_core.example:
-#        class: Dada\CoreBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    dada_advert.googleAPI:
+        class: Dada\AdvertisementBundle\Services\GoogleApi\GoogleApi
+        arguments: ['%googlemaps_api%']
+

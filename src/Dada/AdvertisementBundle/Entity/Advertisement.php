@@ -279,6 +279,7 @@ class Advertisement
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
         $this->views = 0;
+        $this->price = 0; //Default price is 0
         $this->published = new \DateTime();
         if(!is_null($user))
             $this->user = $user;

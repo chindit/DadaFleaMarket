@@ -76,4 +76,57 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
         return $query->getQuery()->getResult();
     }
 
+    /**
+     * Return all adverts in the given coords.
+     * @param $latitude float latitude
+     * @param $longitude float longitude
+     * @param $radius int radius (in minutes)
+     * @param $page int Page number
+     * @param $nbItems int Number of items per page
+     * @param null $categ Category -> if set, returns only Advertisements for selected Category
+     * @return array Advertisement founds
+     */
+    public function findByCoords($latitude, $longitude, $radius, $page, $nbItems, $categ = null){
+        $query = $this->createQueryBuilder('a');
+        $query->where('a.latitude BETWEEN :lat_min AND :lat_max')
+              ->andWhere('a.longitude BETWEEN :long_min AND :long_max')
+              ->andWhere('a.public = true')
+              ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
+              ->setParameter('lat_max', ((float)$latitude)+($radius/120))
+              ->setParameter('long_min', ((float)$longitude)-($radius/120))
+              ->setParameter('long_max', ((float)$longitude)+($radius/120));
+        if(!is_null($categ)){
+            $query->andWhere('a.category = :categorie')
+                ->setParameter('categorie', $categ);
+        }
+              $query->setFirstResult((($page-1)*$nbItems))
+              ->setMaxResults($nbItems);
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Count number of adverts for current research
+     * @param $latitude float latitude
+     * @param $longitude float longitude
+     * @param $radius int Number of Minutes for radius
+     * @param null $categ Category -> if set, restrain count only for selected Category
+     * @return int Number of result
+     */
+    public function getNbAdverts($latitude, $longitude, $radius, $categ = null){
+        $query = $this->createQueryBuilder('a');
+        $query->select('COUNT(a.id)')
+            ->where('a.latitude BETWEEN :lat_min AND :lat_max')
+            ->andWhere('a.longitude BETWEEN :long_min AND :long_max')
+            ->andWhere('a.public = true')
+            ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
+            ->setParameter('lat_max', ((float)$latitude)+($radius/120))
+            ->setParameter('long_min', ((float)$longitude)-($radius/120))
+            ->setParameter('long_max', ((float)$longitude)+($radius/120));
+        if(!is_null($categ)){
+            $query->andWhere('a.category = :categorie')
+                ->setParameter('categorie', $categ);
+        }
+        return $query->getQuery()->getSingleScalarResult();
+    }
+
 }

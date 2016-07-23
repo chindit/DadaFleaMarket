@@ -38,3 +38,21 @@ dada_advertisement_advert:
 dada_cron_unpublish:
     path: /cron/unpublish
     defaults: { _controller: DadaAdvertisementBundle:Cron:cleanOldEntries }
+
+dada_search_from_town:
+    path: /search/town
+    defaults: { _controller: DadaAdvertisementBundle:Search:town }
+    methods: [POST]
+
+dada_search_from_town_page:
+    path: /search/{lat}/{long}/{query}/{page}
+    defaults: { _controller: DadaAdvertisementBundle:Search:townPage }
+
+dada_subsearch_categ:
+    path: /search/categ
+    defaults: { _controller: DadaAdvertisementBundle:Search:categ }
+    methods: [POST]
+
+dada_subsearch_categ_page:
+    path: /search/categ/{lat}/{long}/{query}/{categ}/{page}
+    defaults: { _controller: DadaAdvertisementBundle:Search:categPage }
