@@ -1,0 +1,41 @@
+{% extends "::base.html.twig" %}
+{% block body %}
+    {% if nb_categ == 0 %}
+<div class="alert alert-danger">Aucune catégorie détectée.  Vous <strong>DEVEZ</strong> en créer une pour que le site soit fonctionnel</div>
+    {% endif %}
+
+    {% include ':Functions:alertBox.html.twig' %}
+
+<ul class="list-group">
+    <li class="list-group-item"><a href="{{ path('dada_advertisement_add_category') }}">Ajouter une catégorie</a></li>
+</ul>
+
+    {# List of Categories #}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Catégories</div>
+
+        <!-- Table -->
+        <table class="table" id="adverts-table" data-delete-link="{{ path('dada_advertisement_delete_category', {'id': '1'}) }}">
+            <tr>
+                <th>Nom</th>
+                <th>Action</th>
+            </tr>
+            {% for category in categ %}
+                <tr>
+                    <td>{{ category.name }}</td>
+                    <td><a href="{{ path('dada_advertisement_edit_category', {'id': category.id}) }}" class="btn btn-primary">Éditer</a><a href="#" class="btn btn-danger ajax-delete" data-id="{{ category.id }}">Supprimer</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts
+    '@DadaAdvertisementBundle/Resources/public/js/general.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

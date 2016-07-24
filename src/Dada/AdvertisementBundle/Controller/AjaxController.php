@@ -36,9 +36,9 @@ class AjaxController extends Controller{
     public function getCityFromCoordsAction($latitude, $longitude){
         if(is_float($latitude) && is_float($longitude))
             throw new \InvalidArgumentException('App was expecting float as GPS coords. «'.gettype($latitude).'» and «'.gettype($longitude).'» given.');
-        $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='.$latitude.','.$longitude.'&key='.$this->getParameter('googlemaps_api');
 
-        $result = file_get_contents($url);
+        $googleApi = $this->get('dada.google.api');
+        $result = $googleApi->getCityFromCoords($latitude, $longitude);
         $response = new JsonResponse();
         $response->setContent($result);
         $response->setCharset('UTF-8');

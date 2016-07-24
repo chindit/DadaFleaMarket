@@ -67,7 +67,7 @@ $(document).ready(function() {
     $('a.ajax-delete').click(function(event){
         event.preventDefault();
         //Confirmation
-        var reponse = confirm('Vous êtes sur le point de SUPPRIMER cette annonce.  Cette action est définitive.  Êtes-vous CERTAIN de vouloir faire ça?');
+        var reponse = confirm('Vous êtes sur le point de SUPPRIMER cet élément.  Cette action est définitive.  Êtes-vous CERTAIN de vouloir faire ça?');
         if(reponse === true) {
             var id = $(this).attr('data-id');
             var url = $('#adverts-table').attr('data-delete-link').replace('1', id);
@@ -76,7 +76,7 @@ $(document).ready(function() {
                 if(json == true) {
                     //Selecting <tr> and hiding it
                     tr.hide();
-                    alert('Votre annonce a bien été supprimée. Snif ;(');
+                    alert('L\'élément a bien été supprimé. Snif ;(');
                 }
                 else
                     alert('Une erreur est survenue.  L\'annonce n\'a pas été supprimée');
@@ -84,4 +84,5 @@ $(document).ready(function() {
         }
         //Rien en cas de else
     });
+
 });

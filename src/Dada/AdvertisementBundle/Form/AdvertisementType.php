@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Dada\AdvertisementBundle\Form\ImageType;
 
@@ -27,7 +28,7 @@ class AdvertisementType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, ['label' => 'add.labels.title'])
-            ->add('description')
+            ->add('description', TextareaType::class, array('label' => 'add.labels.description'))
             ->add('images', CollectionType::class, array('entry_type' => ImageType::class, 'allow_add' => true, 'allow_delete' => true))
             ->add('price', IntegerType::class, array('label' => 'Prix (€)', 'required' => false, 'attr' => array('step' => '0.01', 'min' => "0", 'placeholder' => "0")))
             ->add('location', TextType::class, array('label' => 'Emplacement'))

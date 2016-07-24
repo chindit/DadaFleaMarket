@@ -10,8 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 
-class AdvertController extends Controller
-{
+class AdvertController extends Controller{
     /**
      * Show and process new advertisement.
      *
@@ -22,24 +21,54 @@ class AdvertController extends Controller
      */
     public function addAction(Request $request){
 
+        //Checking Categories
+        $nb = count($this->getDoctrine()->getRepository('DadaAdvertisementBundle:Category')->findAll());
+        if($nb == 0){
+            $this->get('session')->getFlashBag()->add('danger', 'Aucune catégorie trouvée.  Veuillez en créer une');
+            return $this->redirectToRoute('dada_advertisement_homepage');
+        }
+
         $advert = new Advertisement($this->getUser());
         $form = $this->createForm(AdvertisementType::class, $advert);
 
         //Verify form validation
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($advert);
-            foreach($advert->getImages() as $image){
-                $image->setAdvert($advert);
-            }
-            $em->flush();
+        if($form->isSubmitted() && $form->isValid()){
+            $this->handleAdvertSumbission($advert);
             $this->get('session')->getFlashBag()->add('info', 'Votre annonce a bien été ajoutée');
             return $this->redirectToRoute('dada_advertisement_homepage');
         }
 
         return $this->render('DadaAdvertisementBundle::add.html.twig', array('form' => $form->createView(), 'ajaxUrl' => $this->get('router')->generate('dada_ajax_city_from_coords', array('latitude' => 'unikey-lat', 'longitude' => 'unikey-long'))));
+    }
+
+    /**
+     * Persist entity when advert submitted
+     *
+     * @param Advertisement $advert
+     * @return bool
+     */
+    private function handleAdvertSumbission(Advertisement $advert){
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($advert);
+        foreach($advert->getImages() as $image){
+            //Checking for «null» images
+            if(is_null($image->getName())){
+                throw new \InvalidArgumentException('L\'image soumise n\'est pas valide!');
+            }
+            //Checking for position
+            if(empty($advert->getLatitude()) && empty($advert->getLocation()))
+                throw new \InvalidArgumentException('La ville NE peut PAS être vide');
+            if(empty($advert->getLatitude())){
+                $coords = $this->get('dada.google.api')->getCoordsFromCityName($advert->getLocation());
+                $advert->setLatitude($coords->lat);
+                $advert->setLongitude($coords->lng);
+            }
+            $image->setAdvert($advert);
+        }
+        $em->flush();
+        return true;
     }
 
     /**
@@ -52,18 +81,22 @@ class AdvertController extends Controller
     public function editAction(Advertisement $advert, Request $request){
         if($advert->getUser() != $this->getUser())
             throw new UnauthorizedHttpException('Cette annonce ne vous appartient pas!  Garnement va!');
+
+        //Checking Categories
+        $nb = count($this->getDoctrine()->getRepository('DadaAdvertisementBundle:Category')->findAll());
+        if($nb == 0){
+            $this->get('session')->getFlashBag()->add('danger', 'Aucune catégorie trouvée.  Veuillez en créer une');
+            return $this->redirectToRoute('dada_advertisement_homepage');
+        }
+
         $form = $this->createForm(AdvertisementType::class, $advert);
 
+        //Handling form
         //Verify form validation
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            foreach($advert->getImages() as $image){
-                $image->setAdvert($advert);
-            }
-            $em->flush();
+        if($form->isSubmitted() && $form->isValid()){
+            $this->handleAdvertSumbission($advert);
             $this->get('session')->getFlashBag()->add('info', 'Votre annonce a bien été mise à jour');
             return $this->redirectToRoute('dada_advertisement_homepage');
         }
@@ -104,7 +137,6 @@ class AdvertController extends Controller
         return $this->render('DadaAdvertisementBundle:Show:pagination.html.twig', array('pagination' => array('total' => $nbPages, 'current' => $page), 'pathName' => 'dada_advertisement_homepage'));
     }
 
-
     /**
      * Render $advert and increment number of views
      *
@@ -113,7 +145,7 @@ class AdvertController extends Controller
      */
     public function showAdvertAction(Advertisement $advert){
         //Increasing views
-        $advert->setViews($advert->getViews()+1);
+        $advert->setViews($advert->getViews() + 1);
         $this->getDoctrine()->getManager()->flush();
 
         //Rendering

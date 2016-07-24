@@ -3,6 +3,7 @@
 namespace Dada\AdvertisementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Category
@@ -25,6 +26,8 @@ class Category
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=75, unique=true)
+     * @Assert\Length(min=5)
+     * @Assert\Length(max=255)
      */
     private $name;
 

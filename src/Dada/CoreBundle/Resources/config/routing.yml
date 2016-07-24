@@ -1,3 +1,7 @@
 dada_core_homepage:
     path:     /
     defaults: { _controller: DadaCoreBundle:Front:index }
+
+dada_core_admin:
+    path: /admin
+    defaults: { _controller: DadaCoreBundle:Front:admin }

@@ -6,6 +6,22 @@ dada_advertisement_edit:
     path: /edit/{slug}
     defaults: { _controller: DadaAdvertisementBundle:Advert:edit }
 
+dada_advertisement_add_category:
+    path: /category/add
+    defaults: { _controller: DadaAdvertisementBundle:Category:add }
+
+dada_advertisement_edit_category:
+    path: /category/edit/{id}
+    defaults: { _controller: DadaAdvertisementBundle:Category:edit }
+    requirements:
+        id: \d+
+
+dada_advertisement_delete_category:
+    path: /category/delete/{id}
+    defaults: { _controller: DadaAdvertisementBundle:Category:delete }
+    requirements:
+        id: \d+
+
 dada_ajax_city_from_coords:
     path: /ajax/city/{latitude}/{longitude}
     defaults: { _controller: DadaAdvertisementBundle:Ajax:getCityFromCoords, _format: json }
