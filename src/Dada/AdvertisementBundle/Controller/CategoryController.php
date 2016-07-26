@@ -91,7 +91,11 @@ class CategoryController extends Controller{
      *
      * @Security("has_role('ROLE_ADMIN')")
      */
-    public function deleteAction(Category $category){dump($category);
+    public function deleteAction(Category $category){
+        $listAdverts = $this->getDoctrine()->getRepository('DadaAdvertisementBundle:Advertisement')->findByCategory($category->getId());
+        foreach($listAdverts as $advert){
+            $this->getDoctrine()->getManager()->remove($advert);
+        }
         $this->getDoctrine()->getManager()->remove($category);
         $this->getDoctrine()->getManager()->flush();
         $response = new JsonResponse();

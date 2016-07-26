@@ -57,16 +57,24 @@ class AdvertController extends Controller{
             if(is_null($image->getName())){
                 throw new \InvalidArgumentException('L\'image soumise n\'est pas valide!');
             }
-            //Checking for position
-            if(empty($advert->getLatitude()) && empty($advert->getLocation()))
-                throw new \InvalidArgumentException('La ville NE peut PAS être vide');
-            if(empty($advert->getLatitude())){
-                $coords = $this->get('dada.google.api')->getCoordsFromCityName($advert->getLocation());
-                $advert->setLatitude($coords->lat);
-                $advert->setLongitude($coords->lng);
-            }
             $image->setAdvert($advert);
         }
+        //Checking for empty category
+        if(count($advert->getCategory()) == 0){
+            throw new \InvalidArgumentException('Au moins une catégorie doit être sélectionnée!');
+        }
+        //Checking for empty town
+        if(count($advert->getTown()) == 0){
+            throw new \InvalidArgumentException('Au moins une ville doit être mentionnée!');
+        }
+        //Registering town
+        foreach($advert->getTown() as $town){
+            $town->setAdvert($advert);
+            $coords = $this->get('dada.google.api')->getCoordsFromCityName($town->getName());
+            $town->setLatitude($coords->lat);
+            $town->setLongitude($coords->lng);
+        }
+
         $em->flush();
         return true;
     }

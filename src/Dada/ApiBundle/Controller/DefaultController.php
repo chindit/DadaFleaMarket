@@ -1,0 +1,83 @@
+<?php
+
+namespace Dada\ApiBundle\Controller;
+
+use Dada\ApiBundle\Entity\Token;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
+class DefaultController extends Controller
+{
+
+    /**
+     * Create a new API Key
+     *
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function requestAction(){
+        $em = $this->getDoctrine()->getRepository('DadaApiBundle:Token');
+        $api = $em->findByUser($this->getUser());  //$api is EXISTING token
+
+        $now = new \DateTime();
+        $expired = false;
+        $exists = false;
+        if(!empty($api) && $api[0]->getExpire() > $now){
+            $exists = true;
+            $this->get('session')->getFlashBag()->add('danger', 'Vous possédez déjà une clé d\'API!');
+            $this->get('session')->getFlashBag()->add('info', 'Votre clé est: '.$api[0]->getToken());
+        }
+        if(!empty($api) && $api[0]->getExpire() < $now){
+            $exists = true; $expired = true;
+            $this->get('session')->getFlashBag()->add('danger', 'Votre clé est expirée!  Veuillez en re-générer une!');
+            $this->getDoctrine()->getManager()->remove($api[0]);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return $this->render('DadaApiBundle::generate.html.twig', array('api' => $api, 'exists' => $exists, 'expired' => $expired));
+    }
+
+    public function generateAction(){
+        $em = $this->getDoctrine()->getRepository('DadaApiBundle:Token');
+        $api = $em->findByUser($this->getUser());  //$api is EXISTING token
+
+        $now = new \DateTime();
+        if(!empty($api)){
+            return $this->redirectToRoute('dada_api_request');
+        }
+
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $token = '';
+        for($i = 0; $i < 50; $i++){
+            $pos = mt_rand(0, strlen($chars)-1);
+            $token .= $chars[$pos];
+        }
+
+        $tokenObj = new Token();
+        $tokenObj->setUser($this->getUser());
+        $tokenObj->setToken($token);
+        $this->getDoctrine()->getManager()->persist($tokenObj);
+        $this->getDoctrine()->getManager()->flush();
+
+        $this->get('session')->getFlashBag()->add('info', 'Votre clé d\'API a été générée avec succès.  Faites-en bon usage ;)');
+        return $this->render('DadaApiBundle::generated.html.twig', array('token' => $token, 'expiration' => $tokenObj->getExpire()));
+
+    }
+
+    /**
+     * UNUSED FUNCTION!
+     * USED BY FOSOAuthBundle
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function fosRequestAction(){
+        $clientManager = $this->container->get('fos_oauth_server.client_manager.default');
+        $client = $clientManager->createClient();
+        $client->setRedirectUris(array('http://www.openclassrooms.com'));
+        $client->setAllowedGrantTypes(array('token', 'authorization_code'));
+        $clientManager->updateClient($client);
+        return $this->redirect($this->generateUrl('fos_oauth_server_authorize', array(
+            'client_id'     => $client->getPublicId(),
+            'redirect_uri'  => 'http://www.openclassrooms.com',
+            'response_type' => 'code'
+        )));
+    }
+}

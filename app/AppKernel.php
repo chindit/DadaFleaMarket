@@ -19,9 +19,11 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
+            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new Dada\CoreBundle\DadaCoreBundle(),
             new Dada\UserBundle\DadaUserBundle(),
             new Dada\AdvertisementBundle\DadaAdvertisementBundle(),
+            new Dada\ApiBundle\DadaApiBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

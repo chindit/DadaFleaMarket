@@ -78,6 +78,14 @@ fos_user:
         form:
             type: Dada\UserBundle\Form\RegistrationType
 
+#FOS OAuth 2
+fos_oauth_server:
+    db_driver: orm       # Drivers available: orm, mongodb, or propel
+    client_class:        Dada\ApiBundle\Entity\Client
+    access_token_class:  Dada\ApiBundle\Entity\AccessToken
+    refresh_token_class: Dada\ApiBundle\Entity\RefreshToken
+    auth_code_class:     Dada\ApiBundle\Entity\AuthCode
+
 #DoctrineExtensions
 stof_doctrine_extensions:
     default_locale: "%locale%"

@@ -88,15 +88,17 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
      */
     public function findByCoords($latitude, $longitude, $radius, $page, $nbItems, $categ = null){
         $query = $this->createQueryBuilder('a');
-        $query->where('a.latitude BETWEEN :lat_min AND :lat_max')
-              ->andWhere('a.longitude BETWEEN :long_min AND :long_max')
+        $query->join('Dada\AdvertisementBundle\Entity\Town', 't')
+              ->where('t.latitude BETWEEN :lat_min AND :lat_max')
+              ->andWhere('t.longitude BETWEEN :long_min AND :long_max')
               ->andWhere('a.public = true')
               ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
               ->setParameter('lat_max', ((float)$latitude)+($radius/120))
               ->setParameter('long_min', ((float)$longitude)-($radius/120))
               ->setParameter('long_max', ((float)$longitude)+($radius/120));
         if(!is_null($categ)){
-            $query->andWhere('a.category = :categorie')
+            $query->innerJoin('Dada\AdvertisementBundle\Entity\Categorie', 'c')
+                ->andWhere('c.id = :categorie')
                 ->setParameter('categorie', $categ);
         }
               $query->setFirstResult((($page-1)*$nbItems))
@@ -115,18 +117,29 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
     public function getNbAdverts($latitude, $longitude, $radius, $categ = null){
         $query = $this->createQueryBuilder('a');
         $query->select('COUNT(a.id)')
-            ->where('a.latitude BETWEEN :lat_min AND :lat_max')
-            ->andWhere('a.longitude BETWEEN :long_min AND :long_max')
+            ->join('Dada\AdvertisementBundle\Entity\Town', 't');
+        if(!is_null($categ)){
+            $query->join('Dada\AdvertisementBundle\Entity\Categorie', 'c');
+        }
+            $query->where('t.latitude BETWEEN :lat_min AND :lat_max')
+            ->andWhere('t.longitude BETWEEN :long_min AND :long_max')
             ->andWhere('a.public = true')
             ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
             ->setParameter('lat_max', ((float)$latitude)+($radius/120))
             ->setParameter('long_min', ((float)$longitude)-($radius/120))
             ->setParameter('long_max', ((float)$longitude)+($radius/120));
         if(!is_null($categ)){
-            $query->andWhere('a.category = :categorie')
+            $query->andWhere('c.id = :categorie')
                 ->setParameter('categorie', $categ);
         }
         return $query->getQuery()->getSingleScalarResult();
+    }
+
+    //TODO
+    public function findByList($list){
+        $query = $this->createQueryBuilder('a');
+        $query->where('a.id IN (:ids)')
+            ->setParameter('ids', $list);
     }
 
 }

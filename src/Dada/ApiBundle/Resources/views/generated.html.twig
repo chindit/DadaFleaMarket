@@ -1,0 +1,14 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+            {% include ':Functions:alertBox.html.twig' %}
+            <h1>Votre clé d'API</h1>
+            <p><strong>Clé d'API : </strong>{{ token }}</p>
+            <p>Cette clé est valide jusqu'au {{ expiration|date('d/m/Y') }}</p>
+            <p>Veuillez faire bon usage de cette clé sous peine de banissement!</p>
+            <p>Vous êtes limité à 50 requêtes par tranche de 10 minutes.</p>
+        </div>
+    </div>
+{% endblock %}

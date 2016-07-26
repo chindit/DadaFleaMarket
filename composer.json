@@ -31,7 +31,8 @@
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "stof/doctrine-extensions-bundle": "^1.2",
         "liip/imagine-bundle": "^1.5",
-        "symfony/translation": "^3.1"
+        "symfony/translation": "^3.1",
+        "friendsofsymfony/oauth-server-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

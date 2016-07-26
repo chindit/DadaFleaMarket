@@ -18,6 +18,10 @@
                 <source>category.description</source>
                 <target>Description</target>
             </trans-unit>
+            <trans-unit id="category_town">
+                <source>Town</source>
+                <target>Ville</target>
+            </trans-unit>
             <trans-unit id="category_submit">
                 <source>category.send</source>
                 <target>Valider</target>

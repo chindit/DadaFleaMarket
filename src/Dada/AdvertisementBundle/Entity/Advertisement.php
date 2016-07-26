@@ -48,27 +48,6 @@ class Advertisement
     private $price;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="location", type="string", length=255, nullable=true)
-     */
-    private $location;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="latitude", type="decimal", precision=10, scale=8, nullable=true)
-     */
-    private $latitude;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=8, nullable=true)
-     */
-    private $longitude;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="vues", type="integer")
@@ -76,7 +55,7 @@ class Advertisement
     private $views;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToMany(targetEntity="Category")
      */
     private $category;
 
@@ -91,6 +70,10 @@ class Advertisement
      */
     private $user;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Town", mappedBy="advert", cascade={"persist", "remove"})
+     */
+    private $town;
 
     /**
      * @var \DateTime $created
@@ -202,101 +185,17 @@ class Advertisement
     }
 
     /**
-     * Set location
-     *
-     * @param string $location
-     *
-     * @return Advertisement
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return string
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * Set latitude
-     *
-     * @param string $latitude
-     *
-     * @return Advertisement
-     */
-    public function setLatitude($latitude)
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    /**
-     * Get latitude
-     *
-     * @return string
-     */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * Set longitude
-     *
-     * @param string $longitude
-     *
-     * @return Advertisement
-     */
-    public function setLongitude($longitude)
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    /**
-     * Get longitude
-     *
-     * @return string
-     */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-    /**
      * Constructor
      */
     public function __construct($user = null)
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->town = new \Doctrine\Common\Collections\ArrayCollection();
         $this->views = 0;
         $this->price = 0; //Default price is 0
         $this->published = new \DateTime();
         if(!is_null($user))
             $this->user = $user;
-    }
-
-    /**
-     * Set category
-     *
-     * @param \Dada\AdvertisementBundle\Entity\Category $category
-     *
-     * @return Advertisement
-     */
-    public function setCategory(\Dada\AdvertisementBundle\Entity\Category $category = null)
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     /**
@@ -486,5 +385,63 @@ class Advertisement
     public function getPublic()
     {
         return $this->public;
+    }
+
+    /**
+     * Add category
+     *
+     * @param \Dada\AdvertisementBundle\Entity\Category $category
+     *
+     * @return Advertisement
+     */
+    public function addCategory(\Dada\AdvertisementBundle\Entity\Category $category)
+    {
+        $this->category[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove category
+     *
+     * @param \Dada\AdvertisementBundle\Entity\Category $category
+     */
+    public function removeCategory(\Dada\AdvertisementBundle\Entity\Category $category)
+    {
+        $this->category->removeElement($category);
+    }
+
+    /**
+     * Add town
+     *
+     * @param \Dada\AdvertisementBundle\Entity\Town $town
+     *
+     * @return Advertisement
+     */
+    public function addTown(\Dada\AdvertisementBundle\Entity\Town $town)
+    {
+        $this->town[] = $town;
+
+        return $this;
+    }
+
+    /**
+     * Remove town
+     *
+     * @param \Dada\AdvertisementBundle\Entity\Town $town
+     */
+    public function removeTown(\Dada\AdvertisementBundle\Entity\Town $town)
+    {
+        $this->town->removeElement($town);
+    }
+
+    /**
+     * Get town
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTown()
+    {
+        return $this->town;
     }
 }

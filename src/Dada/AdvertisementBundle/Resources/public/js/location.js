@@ -12,9 +12,14 @@ function locationSuccess(pos) {
     url = url.replace('unikey-long', crd.longitude);
 
     $.getJSON(url, function(json){
-        $('#advertisement_location').val(json.results[0].address_components[2].long_name);
+        //$('#form_add_advert').val($('#form_add_advert').val()+'?lat='+json.results[2].geometry.location.lat+'&lng='+json.results[2].geometry.location.lng);
+        //console.log($('#form_add_advert').val());
+        var emplacement = $('#advertisement_town');
+        var index = emplacement.find(':input');
+        index.val(json.results[0].address_components[2].long_name);
+        /*$('#advertisement_location').val(json.results[0].address_components[2].long_name);
         $('#advertisement_latitude').val(json.results[2].geometry.location.lat);
-        $('#advertisement_longitude').val(json.results[2].geometry.location.lng);
+        $('#advertisement_longitude').val(json.results[2].geometry.location.lng);*/
     });
 }
 /**

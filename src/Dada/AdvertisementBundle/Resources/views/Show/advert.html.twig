@@ -19,7 +19,7 @@
             </ol>
         </div>
         <div class="row">
-            <p>Classé dans <a href="#">{{ advert.category.name }}</a></p>
+            <p>Classé dans {% for categ in advert.category %}<a href="#">{{ categ.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>
         </div>
         <div class="row">
             <div class="jumbotron">
@@ -54,7 +54,7 @@
                             {% endif %}
                             <p>{{ advert.price }}€</p>
                             <p><a href="#" onclick="alert('Ho!  On devait pas coder ça!  Non mais!');" class="btn btn-primary">Acheter</a></p>
-                            <p class="font-normal">Cette annonce est située à : {{ advert.location }}</p>
+                            <p class="font-normal">Cette annonce est située à : {% for town in advert.town %}<a href="#">{{ town.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>
                         </div>
                     </div>
                     <div class="row">

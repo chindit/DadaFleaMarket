@@ -4,6 +4,7 @@
 $(document).ready(function(){
     //By default, adding a button
     addInsertImageButton();
+    addInsertTownButton();
 
     $('#advertisement_current_location').click(function(event){
         event.preventDefault();
@@ -13,6 +14,12 @@ $(document).ready(function(){
     $('#insert_image').click(function(event){
         event.preventDefault();
         addImageField();
+        return false;
+    });
+
+    $('#insert_town').click(function(event){
+        event.preventDefault();
+        addTownField();
         return false;
     });
 
@@ -34,6 +41,32 @@ function addInsertImageButton(){
             addDeleteLink($(this));
         });
     }
+}
+
+function addInsertTownButton(){
+    var emplacement = $('#advertisement_town');
+    var index = emplacement.find(':input').length;
+
+    if(index == 0){
+        addTownField();
+    }
+    else{
+        emplacement.children('div').each(function(){
+            addDeleteLink($(this));
+        });
+    }
+}
+
+function addTownField(){
+    var emplacement = $('#advertisement_town');
+
+    var index = emplacement.find(':input').length;
+
+    var template = emplacement.attr('data-prototype').replace(/__name__label__/g, 'Ville n°'+(index+1)).replace(/__name__/g, index).replace('<div>', '<div class="jumbotron">');
+
+    var prototype = $(template);
+    addDeleteLink(prototype);
+    emplacement.append(prototype);
 }
 
 function addImageField(){
@@ -68,6 +101,12 @@ function addDeleteLink(prototype){
     deleteLink.click(function(event){
         prototype.remove();
         event.preventDefault();
+        //Adding automatically 1 town
+        var emplacement = $('#advertisement_town');
+        var index = emplacement.find(':input').length;
+        if(index == 0){
+            addTownField();
+        }
         return false;
     });
 }
