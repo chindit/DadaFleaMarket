@@ -1,6 +1,7 @@
 <?php
 
 namespace Dada\AdvertisementBundle\Repository;
+use Dada\AdvertisementBundle\Entity\Category;
 
 /**
  * AdvertisementRepository
@@ -87,23 +88,19 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
      * @return array Advertisement founds
      */
     public function findByCoords($latitude, $longitude, $radius, $page, $nbItems, $categ = null){
-        $query = $this->createQueryBuilder('a');
-        $query->join('Dada\AdvertisementBundle\Entity\Town', 't')
-              ->where('t.latitude BETWEEN :lat_min AND :lat_max')
-              ->andWhere('t.longitude BETWEEN :long_min AND :long_max')
-              ->andWhere('a.public = true')
-              ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
-              ->setParameter('lat_max', ((float)$latitude)+($radius/120))
-              ->setParameter('long_min', ((float)$longitude)-($radius/120))
-              ->setParameter('long_max', ((float)$longitude)+($radius/120));
+        $query = $this->_em->createQuery($this->getSearchQuery(!is_null($categ)));
+        $query->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
+            ->setParameter('lat_max', ((float)$latitude)+($radius/120))
+            ->setParameter('long_min', ((float)$longitude)-($radius/120))
+            ->setParameter('long_max', ((float)$longitude)+($radius/120));
         if(!is_null($categ)){
-            $query->innerJoin('Dada\AdvertisementBundle\Entity\Categorie', 'c')
-                ->andWhere('c.id = :categorie')
-                ->setParameter('categorie', $categ);
+            $query->setParameter('categorie', $categ);
         }
-              $query->setFirstResult((($page-1)*$nbItems))
-              ->setMaxResults($nbItems);
-        return $query->getQuery()->getResult();
+        if($page > 0){
+            $query->setFirstResult((($page - 1) * $nbItems))
+                ->setMaxResults($nbItems);
+        }
+        return $query->getResult();
     }
 
     /**
@@ -115,31 +112,43 @@ class AdvertisementRepository extends \Doctrine\ORM\EntityRepository{
      * @return int Number of result
      */
     public function getNbAdverts($latitude, $longitude, $radius, $categ = null){
-        $query = $this->createQueryBuilder('a');
-        $query->select('COUNT(a.id)')
-            ->join('Dada\AdvertisementBundle\Entity\Town', 't');
-        if(!is_null($categ)){
-            $query->join('Dada\AdvertisementBundle\Entity\Categorie', 'c');
-        }
-            $query->where('t.latitude BETWEEN :lat_min AND :lat_max')
-            ->andWhere('t.longitude BETWEEN :long_min AND :long_max')
-            ->andWhere('a.public = true')
-            ->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
-            ->setParameter('lat_max', ((float)$latitude)+($radius/120))
+        $query = $this->_em->createQuery($this->getSearchQuery(!is_null($categ), true));
+        $query->setParameter('lat_min', ((float)$latitude)-($radius/120)) //120 because we're adding half of the radius on each coord.
+        ->setParameter('lat_max', ((float)$latitude)+($radius/120))
             ->setParameter('long_min', ((float)$longitude)-($radius/120))
             ->setParameter('long_max', ((float)$longitude)+($radius/120));
         if(!is_null($categ)){
-            $query->andWhere('c.id = :categorie')
-                ->setParameter('categorie', $categ);
+            $query->setParameter('categorie', $categ);
         }
-        return $query->getQuery()->getSingleScalarResult();
+        return $query->getSingleScalarResult();
     }
 
-    //TODO
-    public function findByList($list){
-        $query = $this->createQueryBuilder('a');
-        $query->where('a.id IN (:ids)')
-            ->setParameter('ids', $list);
+    /**
+     * Return all Advertisements for a given Category
+     *
+     * @param Category $category
+     * @return array
+     */
+    public function findByCategory(Category $category){
+        $query = $this->createQueryBuilder('a')
+            ->innerJoin('a.category', 'c')
+            ->where('c.id = :cat')
+            ->setParameter('cat', $category);
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Simple function to store the big search query in only one place
+     *
+     * @param $categ bool add categ param?
+     * @return string DQL query
+     */
+    private function getSearchQuery($categ, $count = false){
+        $dql = 'SELECT '.(($count) ? 'COUNT(a.id)' : 'a').' FROM DadaAdvertisementBundle:Advertisement a INNER JOIN a.category c INNER JOIN DadaAdvertisementBundle:Town t WHERE (t.latitude BETWEEN :lat_min AND :lat_max) AND (t.longitude BETWEEN :long_min AND :long_max) AND a.public = true';
+        if($categ){
+            $dql .= ' AND c.id = :categorie';
+        }
+        return $dql;
     }
 
 }

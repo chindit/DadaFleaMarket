@@ -17,4 +17,13 @@
     <route id="dada_api_town_adverts" path="/town">
         <default key="_controller">DadaApiBundle:Api:getCityAdverts</default>
     </route>
+    <route id="dada_api_category_adverts" path="/category">
+        <default key="_controller">DadaApiBundle:Api:getCategoryAdverts</default>
+    </route>
+    <route id="dada_api_town_category_adverts" path="/town/category">
+        <default key="_controller">DadaApiBundle:Api:getTownCategoryAdverts</default>
+    </route>
+    <route id="dada_api_advert" path="/">
+        <default key="_controller">DadaApiBundle:Api:getAdvert</default>
+    </route>
 </routes>
