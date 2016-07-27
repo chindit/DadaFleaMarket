@@ -20,6 +20,9 @@
 namespace Dada\ApiBundle\Controller;
 
 
+use Dada\AdvertisementBundle\Entity\Advertisement;
+use Dada\AdvertisementBundle\Entity\Image;
+use Dada\AdvertisementBundle\Entity\Town;
 use Dada\ApiBundle\Entity\CacheCategory;
 use Dada\ApiBundle\Entity\CacheTown;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -273,7 +276,7 @@ class ApiController extends Controller{
 
     /**
      * Return a specific Advertisement via it's ID or Slug
-     * 
+     *
      * @param Request $request
      * @return bool|JsonResponse
      */
@@ -317,6 +320,436 @@ class ApiController extends Controller{
         $response->setCharset('UTF-8');
         return $response;
 
+    }
+
+    /**
+     * Create a new Advertisement
+     * Available only by POST method
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addAdvertAction(Request $request){
+        //- - - - - - - - - - - - - - - - - -
+        //Standard checks
+        //- - - - - - - - - - - - - - - - - -
+        //Check if key is OK
+        $validity = $this->checkKey($request);
+        if(!is_bool($validity))
+            return $validity;
+        //- - - - - - - - - - - - - - - - - -
+        //End of standard checks
+        //- - - - - - - - - - - - - - - - - -
+
+        //Creating new Object
+        $advert = new Advertisement();
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($advert);
+
+        //Checking parameters
+        $params = array('title' => 'string', 'description' => 'string', 'price' => 'numeric');
+        foreach($params as $key => $value){
+            if(!$request->request->has($key)){
+                $return = array('status' => 400, 'msg' => 'Missing parameter «'.$key.'»!');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $method = 'is_'.$value;
+            if(!$method($request->request->get($key))){
+                $return = array('status' => 400, 'msg' => 'Parameter «'.$key.'» is not a correct value!');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            else{
+                $method = 'set'.ucfirst($key);
+                $advert->$method($request->request->get($key));
+            }
+        }
+
+        if(strlen($advert->getTitle()) < 10 || strlen($advert->getDescription()) < 10){
+            $return = array('status' => 403, 'msg' => 'Title and/or description are too short.  Minimum 10 char long is required');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+
+        //Standard parameters are OK.  Checking non standard ones.
+        if(!$request->request->has('town')){
+            $return = array('status' => 400, 'msg' => 'Missing parameter «Town»!');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        $townList = $request->request->get('town');
+        //Setting array to process it more easily
+        if(!is_array($townList)){
+            $townList = array($townList);
+        }
+        //Setting towns
+        $api = $this->get('dada.google.api');
+        foreach($townList as $townItem){
+            $coords = $api->getCoordsFromCityName($townItem);
+            $town = new Town();
+            $town->setName($townItem);
+            $town->setAdvert($advert);
+            $town->setLatitude($coords->lat);
+            $town->setLongitude($coords->lng);
+            $em->persist($town);
+            $advert->addTown($town);
+        }
+        //Settings categories
+        if(!$request->request->has('category')){
+            $return = array('status' => 400, 'msg' => 'Missing parameter «Category»!');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        $categoryList = $request->request->get('category');
+        //Setting array to process it more easily
+        if(!is_array($categoryList)){
+            $categoryList = array($categoryList);
+        }
+        $repoCateg = $em->getRepository('DadaAdvertisementBundle:Category');
+        foreach($categoryList as $categItem){
+            $categ = (is_numeric($categItem)) ? $repoCateg->find($categItem) : $repoCateg->findOneByName($categItem);
+            if(is_null($categ)){
+                $return = array('status' => 400, 'msg' => 'Category «'.$categItem.'» is invalid!');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $advert->addCategory($categ);
+        }
+        //Setting images
+        $imageList = $request->files->all();
+        foreach($imageList as $img){
+            $image = new Image();
+            $image->setName(uniqid().'.'.$img->guessExtension());
+            $filePath = $img->getRealPath();
+            $imageSize = getimagesize($filePath);
+            $image->setWidth($imageSize[0]);
+            $image->setHeight($imageSize[1]);
+            $image->setWeight(filesize($filePath));
+            $advert->addImage($image);
+            $img->move('../web/uploads/adverts/', $image->getName());
+            $em->persist($image);
+        }
+        $advert->setPublic(true);
+
+        $repoToken = $em->getRepository('DadaApiBundle:Token');
+        $tokenUser = $repoToken->findOneByToken($request->request->get('key'));
+        $user = $tokenUser->getUser();
+        $em->initializeObject($user);
+
+        $advert->setUser($user);
+
+        //Flushing
+        $em->flush();
+
+        $return = array('status' => 200, 'msg' => 'Advert created!', 'data' => $this->exportAdverts(array($advert)));
+        $response = new JsonResponse($return);
+        $response->setCharset('UTF-8');
+        return $response;
+    }
+
+    /**
+     * Update an advert
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function modifyAdvertAction(Request $request){
+        //- - - - - - - - - - - - - - - - - -
+        //Standard checks
+        //- - - - - - - - - - - - - - - - - -
+        //Check if key is OK
+        $validity = $this->checkKey($request);
+        if(!is_bool($validity))
+            return $validity;
+        //- - - - - - - - - - - - - - - - - -
+        //End of standard checks
+        //- - - - - - - - - - - - - - - - - -
+
+        //Check advert
+        $em = $this->getDoctrine()->getManager();
+        $advert = (is_numeric($request->request->get('ad'))) ? $em->getRepository('DadaAdvertisementBundle:Advertisement')->find($request->request->get('ad')) : $em->getRepository('DadaAdvertisementBundle:Advertisement')->findOneBySlug($request->request->get('ad'));
+        if(is_null($advert)){
+            $return = array('status' => 404, 'msg' => 'The Advertisemen you\'re looking for doesn\'t exist :(');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        //Check ownership
+        $repoToken = $em->getRepository('DadaApiBundle:Token');
+        $tokenUser = $repoToken->findOneByToken($request->request->get('key'));
+        $user = $tokenUser->getUser();
+        if($user->getId() != $advert->getUser()->getId()){
+            //Checking only ID because we're working with PROXY Obj
+            $return = array('status' => 403, 'msg' => 'Well… You\'re not the owner of this Ad.  Please get out immediately!  Bad hacker!');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        //User OK
+        //Title
+        if($request->request->has('title')){
+            $length = strlen($request->request->get('title'));
+            if($length < 10 || $length > 255){
+                $return = array('status' => 403, 'msg' => 'Title is too short or too long.  A length between 10 and 255 is required');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            //Ok -> setting value
+            $advert->setTitle($request->request->get('title'));
+        }
+        //Setting description
+        if($request->request->has('description')){
+            $length = strlen($request->request->get('description'));
+            if($length < 10){
+                $return = array('status' => 403, 'msg' => 'Description is too short.  A minimum length of 10 is required');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $advert->setDescription($request->request->get('description'));
+        }
+        //Price
+        if($request->request->has('price')){
+            if(!is_numeric($request->request->get('price'))){
+                $return = array('status' => 403, 'msg' => 'A numeric value is required for the price.');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            if($request->request->get('price') < 0){
+                $return = array('status' => 403, 'msg' => 'Price cannot be lower than 0');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $advert->setPrice($request->request->get('price'));
+        }
+        //Status
+        if($request->request->has('published')){
+            if(!is_bool($request->request->get('published'))){
+                $return = array('status' => 403, 'msg' => 'A boolean value is required for the publication status');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $advert->setPublished((bool)$request->request->get('published'));
+        }
+
+        //Starting non conventional data
+
+        //Categories
+        if($request->request->has('category')){
+            $updateList = $request->request->get('category');
+            if(!is_array($updateList)){
+                $updateList = array($updateList);
+            }
+            //Getting current categories in an array
+            $idList = array();
+            foreach($advert->getCategory() as $cat){
+                $idList[] = $cat->getId();
+            }
+            //Processing categories.
+            $repoCateg = $em->getRepository('DadaAdvertisementBundle:Category');
+            foreach($updateList as $categItem){
+                //Is categ OK?
+                $categ = (is_numeric($categItem)) ? $repoCateg->find($categItem) : $repoCateg->findOneByName($categItem);
+                if(is_null($categ)){
+                    $return = array('status' => 400, 'msg' => 'Category «'.$categItem.'» is invalid!');
+                    $response = new JsonResponse($return);
+                    $response->setCharset('UTF-8');
+                    return $response;
+                }
+                //Does categ already belongs to Advert?
+                if(!in_array($categ->getId(), $idList)){
+                    $advert->addCategory($categ);
+                }
+            }
+        }
+
+        //Towns
+        if($request->request->has('town')){
+            $updateList = $request->request->get('town');
+            if(!is_array($updateList)){
+                $updateList = array($updateList);
+            }
+            //Getting current categories in an array
+            $idList = array();
+            foreach($advert->getTown() as $city){
+                $idList[] = $city->getId();
+            }
+            //Parsing towns
+            $api = $this->get('dada.google.api');
+            foreach($updateList as $townItem){
+                $coords = $api->getCoordsFromCityName($townItem);
+                $town = new Town();
+                $town->setName($townItem);
+                $town->setAdvert($advert);
+                $town->setLatitude($coords->lat);
+                $town->setLongitude($coords->lng);
+                $em->persist($town);
+                $advert->addTown($town);
+            }
+        }
+
+        //Images
+        if($request->files->count() > 0){
+            $nbExisting = count($advert->getImages());
+            if($nbExisting + $request->files->count() > 3){ //Too much pictures -> triggering error
+                $return = array('status' => 400, 'msg' => 'Too much images for one advert.  Maximum is set to 3!');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            //Else -> it's OK => Setting images to Advert
+            $imageList = $request->files->all();
+            foreach($imageList as $img){
+                $image = new Image();
+                $image->setName(uniqid().'.'.$img->guessExtension());
+                $filePath = $img->getRealPath();
+                $imageSize = getimagesize($filePath);
+                $image->setWidth($imageSize[0]);
+                $image->setHeight($imageSize[1]);
+                $image->setWeight(filesize($filePath));
+                $advert->addImage($image);
+                $img->move('../web/uploads/adverts/', $image->getName());
+                $em->persist($image);
+            }
+        }
+
+        //Everything is done.  Saving and thanking
+        $em->flush();
+        $return = array('status' => 200, 'msg' => 'Update done.  Thanks for using Dada\'s Flea Market API ;)', 'data' => $this->exportAdverts(array($advert)));
+        $response = new JsonResponse($return);
+        $response->setCharset('UTF-8');
+        return $response;
+    }
+
+    /**
+     * Delete some elements of the advert or the whole advert itself
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteAdvertAction(Request $request){
+        //- - - - - - - - - - - - - - - - - -
+        //Standard checks
+        //- - - - - - - - - - - - - - - - - -
+        //Check if key is OK
+        $validity = $this->checkKey($request);
+        if(!is_bool($validity))
+            return $validity;
+        //Check advert
+        $em = $this->getDoctrine()->getManager();
+        $advert = (is_numeric($request->request->get('ad'))) ? $em->getRepository('DadaAdvertisementBundle:Advertisement')->find($request->request->get('ad')) : $em->getRepository('DadaAdvertisementBundle:Advertisement')->findOneBySlug($request->request->get('ad'));
+        if(is_null($advert)){
+            $return = array('status' => 404, 'msg' => 'The Advertisemen you\'re looking for doesn\'t exist :(');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        //Check ownership
+        $repoToken = $em->getRepository('DadaApiBundle:Token');
+        $tokenUser = $repoToken->findOneByToken($request->request->get('key'));
+        $user = $tokenUser->getUser();
+        if($user->getId() != $advert->getUser()->getId()){
+            //Checking only ID because we're working with PROXY Obj
+            $return = array('status' => 403, 'msg' => 'Well… You\'re not the owner of this Ad.  Please get out immediately!  Bad hacker!');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        //- - - - - - - - - - - - - - - - - -
+        //End of standard checks
+        //- - - - - - - - - - - - - - - - - -
+
+        $return;
+
+        //2 options: we delete whole advert or just some elements.
+        if($request->request->has('category') || $request->request->has('town') || $request->request->has('image')){
+            //Deleting an elem
+            //Category
+            if($request->request->has('category')){
+                $updateList = $request->request->get('category');
+                if(!is_array($updateList)){
+                    $updateList = array($updateList);
+                }
+                //Getting current categories in an array
+                $idList = array();
+                foreach($advert->getCategory() as $cat){
+                    $idList[] = $cat->getId();
+                }
+                //Processing categories.
+                $repoCateg = $em->getRepository('DadaAdvertisementBundle:Category');
+                foreach($updateList as $categItem){
+                    //Is categ OK?
+                    $categ = (is_numeric($categItem)) ? $repoCateg->find($categItem) : $repoCateg->findOneByName($categItem);
+                    if(is_null($categ)){
+                        $return = array('status' => 400, 'msg' => 'Category «'.$categItem.'» is invalid!');
+                        $response = new JsonResponse($return);
+                        $response->setCharset('UTF-8');
+                        return $response;
+                    }
+                    //Does categ already belongs to Advert?
+                    if(in_array($categ->getId(), $idList)){
+                        $advert->removeCategory($categ);
+                    }
+                }
+            }
+
+            //Town
+            if($request->request->has('town')){
+                $updateList = $request->request->get('town');
+                if(!is_array($updateList)){
+                    $updateList = array($updateList);
+                }
+
+                //Parsing towns
+                foreach($updateList as $townItem){
+                    foreach($advert->getTown() as $town){
+                        if($townItem == $town->getName()){
+                            $advert->removeTown($town);
+                            $em->remove($town);
+                        }
+                    }
+                }
+            }
+
+            //Images
+            if($request->request->has('image')){
+                $imageList = (is_array($request->request->get('image'))) ? $request->request->get('image') : array($request->request->get('image'));
+                foreach($imageList as $img){
+                    foreach($advert->getImages() as $adImg){
+                        if($adImg->getName() == $img){
+                            unlink('../web/uploads/adverts/'.$adImg->getName());
+                            $advert->removeImage($adImg);
+                            $em->remove($adImg);
+                        }
+                    }
+                }
+            }
+
+            $return = array('status' => 200, 'msg' => 'Elements successfully removed from advert.', 'data' => $this->exportAdverts(array($advert)));
+        }
+        else{
+            //Deleting whole advert
+            $em->remove($advert);
+            $return = array('status' => 200, 'msg' => 'Advert successfully removed.  Sad end, isn\'t it?');
+        }
+        $em->flush();
+
+        //Returning main response
+        $response = new JsonResponse($return);
+        $response->setCharset('UTF-8');
+        return $response;
     }
 
     /**
@@ -402,7 +835,7 @@ class ApiController extends Controller{
      */
     private function checkKey(Request $request){
         //1)Is Key present?
-        if(!$request->query->has('key')){
+        if(!$request->query->has('key') && !$request->request->has('key')){
             //Returning error
             $return = array('status' => 400, 'msg' => 'No API key found');
             $response = new JsonResponse($return);
@@ -410,7 +843,7 @@ class ApiController extends Controller{
             return $response;
         }
         //2)Does key exists?
-        $key = $request->query->get('key');
+        $key = ($request->query->has('key')) ? $request->query->get('key') : $request->request->get('key');
         $repo = $this->getDoctrine()->getRepository('DadaApiBundle:Token');
         $token = $repo->findByToken($key);
         if(empty($token)){

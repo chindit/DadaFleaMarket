@@ -250,7 +250,7 @@ class Advertisement
      *
      * @return Advertisement
      */
-    public function setUser(Dada\UserBundle\Entity\User $user)
+    public function setUser($user)
     {
         $this->user = $user;
 

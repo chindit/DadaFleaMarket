@@ -34,11 +34,11 @@ security:
                 check_path: /oauth/v2/auth/login_check
                 login_path: /oauth/v2/auth/login
 
-        api:
-            pattern:    ^/api
-            fos_oauth:  true
-            stateless:  true
-            anonymous:  false # can be omitted as its default value
+        #api:
+        #    pattern:    ^/api
+        #    fos_oauth:  true
+        #   stateless:  true
+        #    anonymous:  false # can be omitted as its default value
 
-    access_control:
-        - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }
+    #access_control:
+    #    - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }
