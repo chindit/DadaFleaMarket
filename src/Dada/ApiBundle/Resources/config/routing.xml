@@ -35,4 +35,7 @@
     <route id="dada_api_add_advert" path="/delete" methods="POST">
         <default key="_controller">DadaApiBundle:Api:deleteAdvert</default>
     </route>
+    <route id="dada_api_add_advert" path="/global">
+        <default key="_controller">DadaApiBundle:Api:global</default>
+    </route>
 </routes>

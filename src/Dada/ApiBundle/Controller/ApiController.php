@@ -51,7 +51,7 @@ class ApiController extends Controller{
             return $validity;
 
         //Check if town is set
-        if(!$request->query->has('name')){
+        if(!$request->query->has('town')){
             //No city name -> error
             $return = array('status' => 400, 'msg' => 'No city name given');
             $response = new JsonResponse($return);
@@ -61,7 +61,7 @@ class ApiController extends Controller{
 
         //Check if request exists in Cache
         $em = $this->getDoctrine()->getManager();
-        $cache = $em->getRepository('DadaApiBundle:CacheTown')->findOneByName(urldecode($request->query->get('name')));
+        $cache = $em->getRepository('DadaApiBundle:CacheTown')->findOneByName(urldecode($request->query->get('town')));
         if(!empty($cache)){
             $adverts = $this->checkCache($cache);
             if($adverts instanceof JsonResponse)
@@ -750,6 +750,22 @@ class ApiController extends Controller{
         $response = new JsonResponse($return);
         $response->setCharset('UTF-8');
         return $response;
+    }
+
+    public function globalAction(Request $request){
+        //No need to check key.  It will be done in sub-functions
+        if($request->query->has('town') && $request->query->has('category')){
+            return $this->getTownCategoryAdvertsAction($request);
+        }
+        if($request->query->has('town')){
+            return $this->getCityAdvertsAction($request);
+        }
+        if($request->query->has('category')){
+            return $this->getCategoryAdvertsAction($request);
+        }
+        if($request->query->has('ad')){
+            return $this->getAdvertAction($request);
+        }
     }
 
     /**
