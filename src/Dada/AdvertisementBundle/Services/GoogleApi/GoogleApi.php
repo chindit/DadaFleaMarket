@@ -30,10 +30,16 @@ class GoogleApi{
         $this->api = $api;
     }
 
-    public function getCoordsFromCityName($name){
+    public function getCoordsFromCityName($name, $isApi = false){
         $url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($name).'&key='.$this->api;
         $result = file_get_contents($url);
         $reponse = json_decode($result);
+        if($reponse->status != 'OK') {
+            if ($isApi)
+                return false;
+            else
+                throw new \InvalidArgumentException('City name given is invalid');
+        }
         return $reponse->results[0]->geometry->location;
     }
 

@@ -86,7 +86,13 @@ class ApiController extends Controller{
 
         //Cache is empty -> querying without it
         //1)Translate city to coords
-        $coords = $this->get('dada.google.api')->getCoordsFromCityName(urldecode($request->query->get('town')));
+        $coords = $this->get('dada.google.api')->getCoordsFromCityName(urldecode($request->query->get('town')), true);
+        if(is_bool($coords)){
+            $return = array('status' => 403, 'msg' => 'Town requested doesn\'t exist :(');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
         //2)Get Adverts
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('DadaAdvertisementBundle:Advertisement');
@@ -392,6 +398,12 @@ class ApiController extends Controller{
         $api = $this->get('dada.google.api');
         foreach($townList as $townItem){
             $coords = $api->getCoordsFromCityName($townItem);
+            if(is_bool($coords)){
+                $return = array('status' => 403, 'msg' => 'Town requested doesn\'t exist :(');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
             $town = new Town();
             $town->setName($townItem);
             $town->setAdvert($advert);
@@ -590,6 +602,12 @@ class ApiController extends Controller{
             $api = $this->get('dada.google.api');
             foreach($updateList as $townItem){
                 $coords = $api->getCoordsFromCityName($townItem);
+                if(is_bool($coords)){
+                    $return = array('status' => 403, 'msg' => 'Town requested doesn\'t exist :(');
+                    $response = new JsonResponse($return);
+                    $response->setCharset('UTF-8');
+                    return $response;
+                }
                 $town = new Town();
                 $town->setName($townItem);
                 $town->setAdvert($advert);
