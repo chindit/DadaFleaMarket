@@ -29,13 +29,13 @@
     <route id="dada_api_add_advert" path="/add" methods="POST">
         <default key="_controller">DadaApiBundle:Api:addAdvert</default>
     </route>
-    <route id="dada_api_add_advert" path="/modify" methods="POST">
+    <route id="dada_api_modify_advert" path="/modify" methods="POST">
         <default key="_controller">DadaApiBundle:Api:modifyAdvert</default>
     </route>
-    <route id="dada_api_add_advert" path="/delete" methods="POST">
+    <route id="dada_api_delete_advert" path="/delete" methods="POST">
         <default key="_controller">DadaApiBundle:Api:deleteAdvert</default>
     </route>
-    <route id="dada_api_add_advert" path="/global">
+    <route id="dada_api_global_advert" path="/global">
         <default key="_controller">DadaApiBundle:Api:global</default>
     </route>
 </routes>

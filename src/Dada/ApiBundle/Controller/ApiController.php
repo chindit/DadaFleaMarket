@@ -86,7 +86,7 @@ class ApiController extends Controller{
 
         //Cache is empty -> querying without it
         //1)Translate city to coords
-        $coords = $this->get('dada.google.api')->getCoordsFromCityName(urldecode($request->query->get('name')));
+        $coords = $this->get('dada.google.api')->getCoordsFromCityName(urldecode($request->query->get('town')));
         //2)Get Adverts
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('DadaAdvertisementBundle:Advertisement');
@@ -94,7 +94,7 @@ class ApiController extends Controller{
         //3)Create cache
         $cache = new CacheTown();
         $cache->setAdverts(serialize($this->exportAdverts($annonces)));
-        $cache->setName(urldecode($request->query->get('name')));
+        $cache->setName(urldecode($request->query->get('town')));
         $em->persist($cache);
         $em->flush();
         //3')If raw -> returning all Advertsiments
@@ -213,7 +213,7 @@ class ApiController extends Controller{
             return $validity;
 
         //Check if town is set
-        if(!$request->query->has('name')){
+        if(!$request->query->has('town')){
             //No city name -> error
             $return = array('status' => 400, 'msg' => 'No city name given');
             $response = new JsonResponse($return);
@@ -722,13 +722,13 @@ class ApiController extends Controller{
                     }
                 }
             }
-
+dump($request->request);
             //Images
             if($request->request->has('image')){
-                $imageList = (is_array($request->request->get('image'))) ? $request->request->get('image') : array($request->request->get('image'));
+                $imageList = (is_array($request->request->get('image'))) ? $request->request->get('image') : array($request->request->get('image'));dump($imageList);
                 foreach($imageList as $img){
                     foreach($advert->getImages() as $adImg){
-                        if($adImg->getName() == $img){
+                        if($adImg->getName() == $img){dump('passed');
                             unlink('../web/uploads/adverts/'.$adImg->getName());
                             $advert->removeImage($adImg);
                             $em->remove($adImg);
@@ -752,6 +752,12 @@ class ApiController extends Controller{
         return $response;
     }
 
+    /**
+     * Global function.  Redirect to sub-functions
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function globalAction(Request $request){
         //No need to check key.  It will be done in sub-functions
         if($request->query->has('town') && $request->query->has('category')){
@@ -766,6 +772,10 @@ class ApiController extends Controller{
         if($request->query->has('ad')){
             return $this->getAdvertAction($request);
         }
+        $return = array('status' => 404, 'msg' => 'Your request could not be understood. :(');
+        $response = new JsonResponse($return);
+        $response->setCharset('UTF-8');
+        return $response;
     }
 
     /**
