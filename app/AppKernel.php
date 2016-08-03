@@ -19,7 +19,6 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new Dada\CoreBundle\DadaCoreBundle(),
             new Dada\UserBundle\DadaUserBundle(),
             new Dada\AdvertisementBundle\DadaAdvertisementBundle(),
