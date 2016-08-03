@@ -38,4 +38,7 @@
     <route id="dada_api_global_advert" path="/global">
         <default key="_controller">DadaApiBundle:Api:global</default>
     </route>
+    <route id="dada_api_admin_category" path="/admin/category">
+        <default key="_controller">DadaApiBundle:Api:category</default>
+    </route>
 </routes>

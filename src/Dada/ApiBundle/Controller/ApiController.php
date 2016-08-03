@@ -21,6 +21,7 @@ namespace Dada\ApiBundle\Controller;
 
 
 use Dada\AdvertisementBundle\Entity\Advertisement;
+use Dada\AdvertisementBundle\Entity\Category;
 use Dada\AdvertisementBundle\Entity\Image;
 use Dada\AdvertisementBundle\Entity\Town;
 use Dada\ApiBundle\Entity\CacheCategory;
@@ -740,7 +741,7 @@ class ApiController extends Controller{
                     }
                 }
             }
-dump($request->request);
+
             //Images
             if($request->request->has('image')){
                 $imageList = (is_array($request->request->get('image'))) ? $request->request->get('image') : array($request->request->get('image'));dump($imageList);
@@ -794,6 +795,76 @@ dump($request->request);
         $response = new JsonResponse($return);
         $response->setCharset('UTF-8');
         return $response;
+    }
+
+    public function categoryAction(Request $request){
+        //- - - - - - - - - - - - - - - - - -
+        //Standard checks
+        //- - - - - - - - - - - - - - - - - -
+        //Check if key is OK
+        $validity = $this->checkKey($request, true);
+        if(!is_bool($validity))
+            return $validity;
+        //Check category
+        $em = $this->getDoctrine()->getManager();
+        if($request->request->has('category')){
+            if(!is_numeric($request->request->get('category'))){
+                $return = array('status' => 401, 'msg' => 'Your request appears to be malformed.  A numeric identifier is required');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            $category = $this->getDoctrine()->getRepository('DadaAdvertisementBundle:Category')->find($request->request->get('category'));
+            if(is_null($category)){
+                $return = array('status' => 404, 'msg' => 'The category doesn\'t exist!');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
+            //Modify or delete
+            if($request->request->has('title') || $request->request->has('description')){
+                //Modify
+                if($request->request->has('title'))
+                    $category->setName($request->request->get('title'));
+                if($request->request->has('description'))
+                    $category->setDescription($request->request->get('description'));
+                $em->flush();
+            }
+            else{
+                //Delete all adverts
+                $listAdverts = $em->getRepository('DadaAdvertisementBundle:Advertisement')->findByCategory($category);
+                foreach($listAdverts as $advert){
+                    $em->remove($advert);
+                }
+                //Deleting category
+                $em->remove($category);
+                $em->flush();
+            }
+            $return = array('status' => 200, 'msg' => 'The category was updated successfully');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        else{
+            if($request->request->has('title') && $request->request->has('description')){
+                $category = new Category();
+                $category->setName($request->request->get('title'));
+                $category->setDescription($request->request->get('description'));
+                if(!empty($em->getRepository('DadaAdvertisementBundle:Category')->findByName($request->request->get('title')))){
+                    //A category with the same name already exists
+                    $return = array('status' => 401, 'msg' => 'Category name already exists');
+                    $response = new JsonResponse($return);
+                    $response->setCharset('UTF-8');
+                    return $response;
+                }
+                $em->persist($category);
+                $em->flush();
+            }
+            $return = array('status' => 200, 'msg' => 'The category was created successfully');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
     }
 
     /**
@@ -875,9 +946,10 @@ dump($request->request);
      * Check if API key exists and is valid
      *
      * @param Request $request
+     * @param bool $needAdmin Check if key belongs to an admin
      * @return bool|JsonResponse
      */
-    private function checkKey(Request $request){
+    private function checkKey(Request $request, $needAdmin = false){
         //1)Is Key present?
         if(!$request->query->has('key') && !$request->request->has('key')){
             //Returning error
@@ -904,6 +976,16 @@ dump($request->request);
             $response = new JsonResponse($return);
             $response->setCharset('UTF-8');
             return $response;
+        }
+        //3')Do we need to check admin?
+        if($needAdmin){
+            $user = $token[0]->getUser();
+            if(!$user->hasRole('ROLE_ADMIN')){
+                $return = array('status' => 403, 'msg' => 'This functionality is reserved to admin only');
+                $response = new JsonResponse($return);
+                $response->setCharset('UTF-8');
+                return $response;
+            }
         }
         //4)If we reach this point, key is valid.
         return true;
