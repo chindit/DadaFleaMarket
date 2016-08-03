@@ -7,7 +7,7 @@
         <h1>Générer une nouvelle clé d'API</h1>
         <p>Vous pouvez générer une nouvelle clé d'API.  Cette clé est valide 6 mois, renouvellable indéfiniment.</p>
         <p>En générant une clé, vous reconnaissez avoir pris connaissance de nos <a href="#">Conditions d'utilisations</a>.</p>
-        <p class="alert-danger"><strong>ATTENTION : </strong>Cette clé est limitée à {{ requests }} par tranche de {{ minutes }} minutes.</p>
+        <p class="alert-danger"><strong>ATTENTION : </strong>Cette clé est limitée à {{ requests }} requêtes par tranche de {{ minutes }} minutes.</p>
         <p><a href="{{ path('dada_api_generate') }}" class="btn btn-success{% if exists and not expired %} disabled{% endif %}">Générer une clé</a></p>
     </div>
 </div>
