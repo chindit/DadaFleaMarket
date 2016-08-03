@@ -33,7 +33,7 @@ class DefaultController extends Controller
             $this->getDoctrine()->getManager()->flush();
         }
 
-        return $this->render('DadaApiBundle::generate.html.twig', array('api' => $api, 'exists' => $exists, 'expired' => $expired));
+        return $this->render('DadaApiBundle::generate.html.twig', array('api' => $api, 'exists' => $exists, 'expired' => $expired, 'requests' => $this->getParameter('api_number_queries'), 'minutes' => $this->getParameter('api_expire_time')));
     }
 
     public function generateAction(){
@@ -61,23 +61,5 @@ class DefaultController extends Controller
         $this->get('session')->getFlashBag()->add('info', 'Votre clé d\'API a été générée avec succès.  Faites-en bon usage ;)');
         return $this->render('DadaApiBundle::generated.html.twig', array('token' => $token, 'expiration' => $tokenObj->getExpire()));
 
-    }
-
-    /**
-     * UNUSED FUNCTION!
-     * USED BY FOSOAuthBundle
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function fosRequestAction(){
-        $clientManager = $this->container->get('fos_oauth_server.client_manager.default');
-        $client = $clientManager->createClient();
-        $client->setRedirectUris(array('http://www.openclassrooms.com'));
-        $client->setAllowedGrantTypes(array('token', 'authorization_code'));
-        $clientManager->updateClient($client);
-        return $this->redirect($this->generateUrl('fos_oauth_server_authorize', array(
-            'client_id'     => $client->getPublicId(),
-            'redirect_uri'  => 'http://www.openclassrooms.com',
-            'response_type' => 'code'
-        )));
     }
 }

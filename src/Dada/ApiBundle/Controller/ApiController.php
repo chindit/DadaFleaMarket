@@ -987,7 +987,21 @@ class ApiController extends Controller{
                 return $response;
             }
         }
-        //4)If we reach this point, key is valid.
+        //4)Key is valid.  Great!  Checking access for abuse
+        $em = $this->getDoctrine()->getManager();
+        $nbAccess = $em->getRepository('DadaApiBundle:Request')->countByMinutes($token[0]->getToken(), $this->getParameter('api_expire_time'));
+        if($nbAccess >= $this->getParameter('api_number_queries')){
+            $return = array('status' => 403, 'msg' => 'Too many queries!  Please wait a bit.');
+            $response = new JsonResponse($return);
+            $response->setCharset('UTF-8');
+            return $response;
+        }
+        //5)Increasing access count
+        $access = new \Dada\ApiBundle\Entity\Request();
+        $access->setToken($token[0]->getToken());
+        $em->persist($access);
+        $em->flush();
+        //6)If we reach this point, key is valid.
         return true;
     }
 
